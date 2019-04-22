@@ -1,0 +1,27 @@
+paper
+2 Materials and methods
+2.1 Datasets
+2.1.1 Training, validation and test datasets
+2.1.2 Independent SCOP 2.06 test dataset
+2.1.3 Independent CASP test dataset
+2.2 Input feature generation and label assignment
+2.3 Deep convolutional neural network for fold classification
+2.4 Model training and validation
+2.5 Model evaluation and benchmarking
+2.6 Hidden fold-related feature extraction and
+template ranking
+3 Results
+3.1 Training and validation on SCOP 1.75 dataset
+3.2 Performance on SCOP 2.06 dataset
+3.3 Performance on CASP dataset
+3.4 Evaluation of four distance metrics for comparing fold-related hidden features
+
+3.5 Fold-classification assisted protein structure prediction
+3.6 Robustness of fold-related features against sequence mutation, insertion, deletion and truncation
+3.7 Generalization of deep convolutional neural network for family classification on SCOP database and fold classification on ECOD database
+3.8 Analysis of the importance of the features for fold classification
+
+4 Conclusion
+
+
+References
