@@ -75,7 +75,7 @@ The SCOP database is a database of proteins organized into hierarchical classes 
 
 Two different versions of the dataset were used, SCOP 1.55 and SCOPe 2.07. SCOP 1.55 is a smaller dataset which is a subset of SCOPe 2.07, a larger and more recent dataset. SCOP 1.55 [Ref: Biblio] and SCOPe 2.07 [Ref: Biblio] were downloaded from the Berkeley repository as tar files and unpacked. For each of the datasets, index files [Ref:Biblo] are provided.
 
-\subsubsection{Small Dataset SCOPe1.55}
+\subsubsection{Small Dataset SCOP 1.55}
 
 SCOP 1.55 is a dataset of 31,474 proteins that have been organized into 7 Classes, 605 Folds, 947 Superfamilies, and 1557 Families. The dataset was released and updated till 2001. This dataset is a subset of the SCOPe 2.07 dataset.
 
@@ -91,7 +91,7 @@ We split up 70\% of the dataset for training, 15\% for validation and 15\% for t
 
 New methods were tested on the small dataset. This allowed us to quickly prototype and optimize our methods to run on the larger dataset.
 
-\subsubsection{Large Dataset SCOPe2.07}
+\subsubsection{Large Dataset SCOPe 2.07}
 
 SCOPe 2.07 is a database of 276,231 proteins that have been organized into 7 Classes, 1232 Folds, 2026 Superfamilies, and 4919 Families. The dataset was released and updated till 2017. This dataset contains and is about 9 times larger than the SCOP 1.55 dataset.
 
@@ -315,7 +315,7 @@ From the sparse protein backbone, we construct a sparse distance matrix in the s
 For the protein of length 600, the sparse distance matrix would reduce the matrix's size from 600x600 to 300x300. This is still too big for due to the limitations on the GPU memory. So we crop the sparse distance matrix in the same manner as a regular distance matrix. We also take care such that the training, validation, and testing groups do not share cropped matrices from the same protein.
 
 %----------------------
-\subsection{Convolutional Network Model}
+\subsubsection{Convolutional Network Model}
 %----------------------
 
 The features from each of these subsections were fed into a a 2D-convolutional network. The architecture of the 2D-convolutional network for mapping protein structure to folds contains, in order, 32 3x3 convolutional layers, 64 3x3 convolutional layers, 2x2 max pooling, 128 dense layer, and the output layer.
@@ -345,24 +345,70 @@ There are a lot of benefits for a simple network performing well. First, it ensu
 
 
 \subsubsection{ Mathematical Background}
+\begin{defn}
+K-Simplex is the convex hull of the standard basis of $ \mathbb{R}^{k+1} $
+\end{defn}
+
+\begin{defn}
+Let $\sigma$ be a K-Simplex.
+The vertex of $\sigma$ is the points.
+The face of $\sigma$ are the simplices formed by subset of the vertices of $\sigma$.
+2-face is a face of $\sigma$ with $2+1$ vertices.
+\end{defn}
+
+\begin{defn}
+Simplicial complex is a topological space composed of set of simplices, $ \sum $, such that 
+- Any face of a simplex $\sigma \in \sum$ is in $\sum$.
+- The intersection of any two simplices in $ \sum $ is in $ \sum $
+\end{defn}
+
 
 \subsubsection{Persistence Homology}
-As a visualization, we run the TDA on 2b7h, a protein of length ~120. We see that the barcodes do represent significant features of the protein such as alpha helices and beta sheets.
+We inspect the persistence homology of our protein '1ux8'. It is a protein of length 118.
+Here is our protein chain. At each point, we search the radius around the point to find nearby points.
 
 \begin{figure}[t]
-	\includegraphics[width=\linewidth]{helixsimplex.png}
+	\includegraphics[width=\linewidth]{img/hom/ballRad1.png}
+	\caption{TDA 2b7h detecting alpha helices }
+	\label{fig:tdahelix}
+\end{figure}
+The red edges indicate that the two points are less than 3.5 distance away. Making them connected.
+As we increase the radius, we connect more and more points.
+\begin{figure}[t]
+	\includegraphics[width=\linewidth]{img/hom/ballRad2.png}
+	\caption{TDA 2b7h detecting alpha helices }
+	\label{fig:tdahelix}
+\end{figure}
+
+The connections between these points form polygons (simplexes).
+\begin{figure}[t]
+	\includegraphics[width=\linewidth]{img/hom/ballRad3.png}
+	\caption{TDA 2b7h detecting alpha helices }
+	\label{fig:tdahelix}
+\end{figure}
+After a certain point we want to cut off our search radius because we have extracted all the notable features from our structure.
+(If we keep increasing the search radius then all the points will be connected to each other)
+
+A polygon is filled in when the inner polygons of the larger polygons are filled in.
+We note that triangles are filled as soon as they are formed but larger structures take more time to get filled in.
+Persistent homology tells us when (the radius) at which these polygons are created and filled in.
+
+
+Below we have two examples of the polygons.
+\begin{figure}[t]
+	\includegraphics[width=\linewidth]{img/hom/Simplex1.png}
 	\caption{TDA 2b7h detecting alpha helices }
 	\label{fig:tdahelix}
 \end{figure}
 
 \begin{figure}[t]
-	\includegraphics[width=\linewidth]{betasimplex.png}
-	\caption{TDA 2b7h detecting beta sheets }
-	\label{fig:tdabeta}
+	\includegraphics[width=\linewidth]{img/hom/Simplex2.png}
+	\caption{TDA 2b7h detecting alpha helices }
+	\label{fig:tdahelix}
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[t]
 	\includegraphics[width=\linewidth]{persistenceimages.png}
 	\caption{Persistence Images}
 	\label{fig:boat1}
@@ -374,13 +420,13 @@ We format the barcode data into three separate input features: persistent images
 \\
 \textbf{Persistent Images:} The barcodes for each simplex are mapped into a 2-dimensional vector space with the first coordinate being the birth and the second coordinate being the persistence of the simplex. The plot cropped and converted to a blurred image at a set resolution. The range of the first and second coordinates to crop the plot were derived from the distribution of the data.
 
-\begin{figure}
+\begin{figure}[t]
 	\includegraphics[width=\linewidth]{xhist.png}
 	\caption{x range}
 	\label{fig:boat1}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[t]
 	\includegraphics[width=\linewidth]{yhist.png}
 	\caption{y range}
 	\label{fig:boat1}
@@ -456,7 +502,7 @@ We format the barcode data into three separate input features: persistent images
 %	BIBLIOGRAPHY
 %---------------------------------
 \pagebreak
- 
+\section*{Test}
 \begin{thebibliography}{9}
 
 \bibitem{persistenceImages} 

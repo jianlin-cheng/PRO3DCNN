@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  22 APR 2019 00:50
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  22 APR 2019 01:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -271,6 +271,18 @@ LaTeX Warning: Label `fig:network' multiply defined.
 LaTeX Warning: Label `fig:network' multiply defined.
 
 
+LaTeX Warning: Label `fig:tdahelix' multiply defined.
+
+
+LaTeX Warning: Label `fig:tdahelix' multiply defined.
+
+
+LaTeX Warning: Label `fig:tdahelix' multiply defined.
+
+
+LaTeX Warning: Label `fig:tdahelix' multiply defined.
+
+
 LaTeX Warning: Label `fig:boat1' multiply defined.
 
 
@@ -479,11 +491,6 @@ Package pdftex.def Info: 1ux8pdbSparseDistM.png  used on input line 308.
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [7 <./cropMat.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 318--318
-|[]\OT1/cmr/bx/n/14.4 Convolutional Net-work
- []
-
-
 Underfull \vbox (badness 1661) has occurred while \output is active []
 
 <model_plot.png, id=49, 526.96875pt x 862.22125pt>
@@ -497,105 +504,121 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 [8 <./cropMatMiss.png> <./1ux8sparse.png> <./1ux8pdbSparseDistM.png (PNG copy)>
 ]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
 <tdaexample.png, id=55, 363.759pt x 254.3904pt>
 File: tdaexample.png Graphic file (type png)
 <use tdaexample.png>
 Package pdftex.def Info: tdaexample.png  used on input line 341.
 (pdftex.def)             Requested size: 221.0pt x 154.55684pt.
-<helixsimplex.png, id=56, 430.60875pt x 284.06125pt>
-File: helixsimplex.png Graphic file (type png)
-<use helixsimplex.png>
-Package pdftex.def Info: helixsimplex.png  used on input line 353.
-(pdftex.def)             Requested size: 221.0pt x 145.79254pt.
-<betasimplex.png, id=57, 648.4225pt x 493.845pt>
-File: betasimplex.png Graphic file (type png)
-<use betasimplex.png>
-Package pdftex.def Info: betasimplex.png  used on input line 359.
-(pdftex.def)             Requested size: 221.0pt x 168.31952pt.
-<persistenceimages.png, id=58, 477.785pt x 136.51pt>
+ [9 <./model_plot.png> <./tdaexample.png>]
+<img/hom/ballRad1.png, id=60, 454.69875pt x 416.55624pt>
+File: img/hom/ballRad1.png Graphic file (type png)
+<use img/hom/ballRad1.png>
+Package pdftex.def Info: img/hom/ballRad1.png  used on input line 371.
+(pdftex.def)             Requested size: 221.0pt x 202.46175pt.
+<img/hom/ballRad2.png, id=61, 481.8pt x 398.48875pt>
+File: img/hom/ballRad2.png Graphic file (type png)
+<use img/hom/ballRad2.png>
+Package pdftex.def Info: img/hom/ballRad2.png  used on input line 378.
+(pdftex.def)             Requested size: 221.0pt x 182.78413pt.
+<img/hom/ballRad3.png, id=62, 503.8825pt x 411.5375pt>
+File: img/hom/ballRad3.png Graphic file (type png)
+<use img/hom/ballRad3.png>
+Package pdftex.def Info: img/hom/ballRad3.png  used on input line 385.
+(pdftex.def)             Requested size: 221.0pt x 180.49934pt.
+<img/hom/Simplex1.png, id=63, 494.84875pt x 395.4775pt>
+File: img/hom/Simplex1.png Graphic file (type png)
+<use img/hom/Simplex1.png>
+Package pdftex.def Info: img/hom/Simplex1.png  used on input line 399.
+(pdftex.def)             Requested size: 221.0pt x 176.61754pt.
+
+Underfull \vbox (badness 1275) has occurred while \output is active []
+
+<img/hom/Simplex2.png, id=64, 469.755pt x 396.48125pt>
+File: img/hom/Simplex2.png Graphic file (type png)
+<use img/hom/Simplex2.png>
+Package pdftex.def Info: img/hom/Simplex2.png  used on input line 405.
+(pdftex.def)             Requested size: 221.0pt x 186.5277pt.
+<persistenceimages.png, id=65, 477.785pt x 136.51pt>
 File: persistenceimages.png Graphic file (type png)
 <use persistenceimages.png>
-Package pdftex.def Info: persistenceimages.png  used on input line 366.
+Package pdftex.def Info: persistenceimages.png  used on input line 412.
 (pdftex.def)             Requested size: 221.0pt x 63.14113pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [9 <./model_plot.png> <./tdaexample.png>]
-<xhist.png, id=63, 583.17876pt x 456.70625pt>
+<xhist.png, id=66, 583.17876pt x 456.70625pt>
 File: xhist.png Graphic file (type png)
 <use xhist.png>
-Package pdftex.def Info: xhist.png  used on input line 378.
+Package pdftex.def Info: xhist.png  used on input line 424.
 (pdftex.def)             Requested size: 221.0pt x 173.06932pt.
-<yhist.png, id=64, 584.1825pt x 457.71pt>
+<yhist.png, id=67, 584.1825pt x 457.71pt>
 File: yhist.png Graphic file (type png)
 <use yhist.png>
-Package pdftex.def Info: yhist.png  used on input line 384.
+Package pdftex.def Info: yhist.png  used on input line 430.
 (pdftex.def)             Requested size: 221.0pt x 173.15637pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 395--395
+Underfull \hbox (badness 10000) in paragraph at lines 441--441
 |[]\OT1/cmr/bx/n/14.4 Distance Ma-trix Al-go-
  []
 
-[10 <./helixsimplex.png> <./betasimplex.png> <./persistenceimages.png> <./xhist
-.png>]
-<AccSparsevsNonSparse.png, id=72, 792.9625pt x 480.79625pt>
+
+Underfull \vbox (badness 4739) has occurred while \output is active []
+
+ [10 <./img/hom/ballRad1.png> <./img/hom/ballRad2.png>]
+<AccSparsevsNonSparse.png, id=73, 792.9625pt x 480.79625pt>
 File: AccSparsevsNonSparse.png Graphic file (type png)
 <use AccSparsevsNonSparse.png>
-Package pdftex.def Info: AccSparsevsNonSparse.png  used on input line 404.
+Package pdftex.def Info: AccSparsevsNonSparse.png  used on input line 450.
 (pdftex.def)             Requested size: 221.0pt x 133.99843pt.
-<ValAccSparsevsNonsparse.png, id=73, 791.95876pt x 485.815pt>
+<ValAccSparsevsNonsparse.png, id=74, 791.95876pt x 485.815pt>
 File: ValAccSparsevsNonsparse.png Graphic file (type png)
 <use ValAccSparsevsNonsparse.png>
-Package pdftex.def Info: ValAccSparsevsNonsparse.png  used on input line 410.
+Package pdftex.def Info: ValAccSparsevsNonsparse.png  used on input line 456.
 (pdftex.def)             Requested size: 221.0pt x 135.56766pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
-Underfull \hbox (badness 1033) in paragraph at lines 470--474
+Underfull \hbox (badness 1033) in paragraph at lines 516--520
 \OT1/cmr/m/n/12 Cheng. 2018. \OT1/cmr/m/it/12 DeepSF: deep con-vo-lu-
  []
 
 
-Underfull \hbox (badness 1603) in paragraph at lines 482--486
+Underfull \hbox (badness 1603) in paragraph at lines 528--532
 \OT1/cmr/m/n/12 2014. \OT1/cmr/m/it/12 SCOPe: Struc-tural Clas-si-fi-ca-
  []
 
 
-Underfull \hbox (badness 2027) in paragraph at lines 482--486
+Underfull \hbox (badness 2027) in paragraph at lines 528--532
 \OT1/cmr/m/it/12 tion of Pro-teins|extended, in-te-grat-
  []
 
 
-Underfull \hbox (badness 2608) in paragraph at lines 482--486
+Underfull \hbox (badness 2608) in paragraph at lines 528--532
 \OT1/cmr/m/it/12 ing SCOP and AS-TRAL data and
  []
 
 
-Underfull \hbox (badness 1648) in paragraph at lines 482--486
+Underfull \hbox (badness 1648) in paragraph at lines 528--532
 \OT1/cmr/m/it/12 clas-si-fi-ca-tion of new struc-tures. \OT1/cmr/m/n/12 Nu-
  []
 
-
-Overfull \hbox (79.1441pt too wide) in paragraph at lines 489--494
+[11 <./img/hom/ballRad3.png> <./img/hom/Simplex1.png>]
+Overfull \hbox (79.1441pt too wide) in paragraph at lines 535--540
 \OT1/cmr/m/n/12 https://cdn.rcsb.org/wwpdb/docs/documentation/file-
  []
 
-[11 <./yhist.png> <./AccSparsevsNonSparse.png> <./ValAccSparsevsNonsparse.png>]
-[12
+[12 <./img/hom/Simplex2.png> <./persistenceimages.png> <./xhist.png> <./yhist.p
+ng> <./AccSparsevsNonSparse.png>] [13
 
-] (./paper.aux)
+ <./ValAccSparsevsNonsparse.png>]
+(./paper.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 3296 strings out of 492649
- 43931 string characters out of 6129622
- 209658 words of memory out of 5000000
- 7098 multiletter control sequences out of 15000+600000
+ 3311 strings out of 492649
+ 44288 string characters out of 6129622
+ 209648 words of memory out of 5000000
+ 7109 multiletter control sequences out of 15000+600000
  12750 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  42i,9n,28p,765b,232s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -609,10 +632,10 @@ ocal/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loca
 l/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local
 /texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/
 texlive/2018/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on paper.pdf (12 pages, 910386 bytes).
+Output written on paper.pdf (13 pages, 1026526 bytes).
 PDF statistics:
- 117 PDF objects out of 1000 (max. 8388607)
- 59 compressed objects within 1 object stream
+ 127 PDF objects out of 1000 (max. 8388607)
+ 62 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 96 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 111 words of extra memory for PDF output out of 10000 (max. 10000000)
 
