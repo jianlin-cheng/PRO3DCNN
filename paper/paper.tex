@@ -5,6 +5,7 @@
 
 \documentclass[12pt, a4paper, twocolumn, fullpage]{article}
 \usepackage{algorithm}
+\usepackage{makecell}
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{amssymb}
@@ -62,7 +63,106 @@ We extract significant topological simplices of the protein by using persistent 
 % ====================================
 \section{Introduction}
 % ====================================
-    Add introduction in literature and background information here. Future work to be added here. Discussion of topological data analysis will also be added here.
+\begin{figure*}[t]
+	\centering
+    \includegraphics[width=.8\linewidth]{img/SCOP/scop_hierarchy.png}
+    \caption{A partial view of the SCOP hierarchy.}
+    \label{}
+\end{figure*}
+
+Structural Classification of Proteins (SCOP) is a database of protein structural relationships. The proteins are placed in an hierarchy in relative to their to structural and evolutionary relations \cite{scope}. 
+SCOP was initially manually curated ordering of proteins \cite{scope}. However, as many numerous proteins continue to be discovered at a rapid pace, a need for an automatic method of classification became necessary.
+
+Sequence based classification using deep convolutional neural networks like DeepSF show that it is possible to predict protein fold with an acurracy up to 75.3\% \cite{deepsf}. Structural Classification of Proteins - extended (SCOPe), extends the original SCOP database by using these types of rigorously validated automated methods to classify newly discovered proteins \cite{scope}. 
+
+Similar to taxonomy, SCOP was created as a hierarchy with a basis in evolutionary relationships. Species, protein, family, and superfamily, the lower levels of the SCOP hierarchy represent the evolution-based relationships between the proteins. SCOP characterizes each of these levels with the following description \cite{scope}.
+
+\begin{itemize}
+   \item \textbf{Species} representing a distinct protein sequence and its naturally occurring or artificially created variants.
+   \item \textbf{Protein} grouping together similar sequences of essentially the same functions that either originate from different biological species or represent different isoforms within the same species 
+   \item \textbf{Family} containing proteins with similar sequences but typically distinct functions
+   \item \textbf{Superfamily} bridging together protein families with common functional and structural features inferred to be from a common evolutionary ancestor.
+\end{itemize}
+
+Fold and class, the higher levels in our hierarchy as classified based on the similarity of structure and not necessarily evolutionary similarities \cite{scope}. 
+
+\begin{itemize}
+   \item \textbf{Folds} grouping structurally similar superfamilies.
+   \item \textbf{Classes} based mainly on secondary structure content and organization.
+\end{itemize}
+
+The highest level of the hierarchy, class, consists of 7 categories. Alpha proteins (a), beta proteins (b), alpha/beta proteins (c), alpha+beta proteins (d), multi-domain proteins (e), membrane and cell surface proteins and peptides (f), and small proteins (g). Class (f) and (g)'s name are descriptive of their members. The original SCOP publication clarifies the members of class a-e \cite(SCOP).
+
+\begin{itemize}
+\item \textbf{Alpha proteins} For proteins whose structure is essentially formed by a-helices.
+\item \textbf{Beta proteins} For those whose structure is essentially formed by b-sheets.
+\item \textbf{Alpha/Beta proteins} For proteins with
+a-helices and b-strands that are largely interspersed.
+\item \textbf{Alpha+Beta proteins} For those in which
+a-helices and b-strands are largely segregated.
+\item \textbf{Multi-domain} For those with domains of different
+fold and for which no homologues are known at
+present.
+\end{itemize}
+
+Many works have been done on using the protein sequences and their evolutionary relationships with each other to predict the protein hierarchy. This is primarily due to the lack of structural information for newly discovered proteins. 
+
+In this paper, we shift the focus from a protein's sequence to the topological structure to predict the protein's fold and class. We expect the shift in focus to be quite successful in classifying the protein class and fold since these levels have been curated based on the similarity of structures between the proteins.
+
+Since each fold belongs to only one class, predicting the protein fold also predicts the protein's class. Thus, we narrow the focus of our problem to predicting a protein's fold.
+
+
+We introduce two methods for classifying protein fold. First, we use a distance matrix as an input feature to a convolutional neural network. Second, we use persistent homology to extract topological features of our data and plot these features as an input feature to a convolutional neural network.
+
+\textbf{Distance Matrix} \\
+Each protein has a backbone structure that is formed by  series of connecting points. The backbone structure of the protein is characteristic of the protein's general shape. A distance matrix of the protein's backbone is created, where the rth row and cth column of the matrix gives the distance between the rth point and the cth point of the protein backbone. Then this matrix is used as an input to our convolutional neural network.
+
+There has been existing work (Fast SCOP Classification) on using the distance matrix to classify proteins from a very small subset of SCOP database \cite{fastSCOP} of 698 proteins. The distance matrix is computed for the protein and fed into a multi-class support vector machine (SVM) of the One-Versus-One (OVO) variant. This approach achieved and accuracy of 74.55\% on this small subset of SCOP. 
+
+We take a look at few of the representative proteins from alpha proteins, beta proteins, alpha/beta proteins, and alpha+beta proteins. We juxtapose each protein's distance matrix to the protein's structure to see if there are significant differences between the classes. We see that the distance matrices do represent the alpha helices, the beta sheets, and also the relationship between these features.
+
+\begin{figure*}
+	\centering
+    \includegraphics[width=\linewidth]{img/SCOP/scopDistCompare.png}
+    \caption{A comparison of the distance matrix from the proteins of different classes. We see that the distance matrix is able to pick up on characteristic alpha helix and beta sheets of each protein, making it likely that this feature will perform well.}
+    \label{}
+\end{figure*}
+
+\begin{figure}
+	\centering
+    \includegraphics[width=.9\linewidth]{img/fastSCOP/ROIdecomp.png}
+    \caption{Fast SCOP Classification decomposing the upper triangle of a distance matrix into regions of interest (ROI) to extract important features such as alpha helices and beta sheets.}
+    \label{}
+\end{figure}
+
+
+Fast SCOP Classification extracts regions of interest (ROI) from the distance matrix by decomposing the upper triangle of the distance matrix into ROI. These regions attempt to capture the regions of the distance matrix where there are alpha helices and beta sheets. The relationships between these regions of interest are abstracted into a feature set which is given to the SVM for fold classification.
+
+In comparison, our method uses a convolutional neural network to have our model learn the ROI on it's own. The CNN has much more advantages over the decomposition method because complex relationships between regions of interest can be modeled by the hidden layer and also the regions of interests are dynamically formed as the model is trained. Furthermore, there aren't supervisions into constructing the high-level feature set of ROIs, allowing the model to learn complex behaviors that may elude or be difficult to define clearly. However, a downside to the CNN is that it is very computationally intensive, requiring a long training time and a large set of data to learn effectively.
+
+\begin{figure}
+	\centering
+    \includegraphics[width=\linewidth]{img/hom/persistentHomEx.png}
+    \caption{Here is persistent homology characterizing the point cloud of four points. We see that a rectangular cycle is formed when the 4 boundary edges of the rectangles are formed at $\epsilon = 2.6$. We see that this rectangular cycle is dies at   $\epsilon = 3.4$}
+    \label{fig:persistentHomEx}
+\end{figure}
+
+
+\textbf{Persistent Homology}  \\
+Persistent homology is a mathematical theory from algebraic topology that allows the characterization of a point cloud by the observing creations of cycles in the data and how long these cycles persist. We iterate over a real number variable, $\epsilon$, and connect the edges in our point cloud whose length is smaller than $\epsilon$. 
+
+A cycle is formed when a closed loop is formed by the path of the edges. In the example with 4 points (Fig.\ref{fig:persistentHomEx}), a cycle is formed when the four edges of the rectangle's boundary is formed. The $\epsilon$ value at which the cycle is formed is called the $birth$ of this cycle. This cycle is destroyed when triangles a formed within our cycle to completely fill it in. The $\epsilon$ value associated with the cycle being filled in is called the $death$ of the cycle. We say that the cycle persists for a duration of $birth-death$. Each cycle forms an interval, $[birth, death]$. The collection of all intervals from the cycles in the data is called a barcode.
+
+There has been existing attempts at using Persistent Homology to classify the highest level of SCOP hierarchy \cite{SCOPHom}. Cang applies persistent homology on a small set of 900 proteins selected from Alpha, Beta, and Alpha/Beta classes. Each class is represented by 300 proteins and 60 proteins were selected for testing. A SVM is used to classify the classes with with an average accuracy of 85\%. 
+
+When we observe the barcode of the proteins from the different classes we do see some distinguishing patterns.
+scopHom
+\begin{figure}
+	\centering
+    \includegraphics[width=\linewidth]{img/hom/scopHom.png}
+    \caption{Here is persistent homology characterizing the point cloud of four points. We see that a rectangular cycle is formed when the 4 boundary edges of the rectangles are formed at $\epsilon = 2.6$. We see that this rectangular cycle is dies at   $\epsilon = 3.4$}
+    \label{fig:persistentHomEx}
+\end{figure}
 
 % ====================================
 \section{Material}
@@ -72,16 +172,35 @@ We extract significant topological simplices of the protein by using persistent 
 \subsection{Datasets}
 %----------------------
 
-The SCOP database is a database of proteins organized into hierarchical classes based on their shape and function. There are 4 levels of the hierarchy (top down): Class, Folds, Superfamily, Family. We will be primarily concerned with the Fold.
+The SCOP database is a database of proteins organized into hierarchical classes based on their shape and function. There are 4 levels of the important hierarchy (top down): Class, Folds, Superfamily, Family. We will be primarily concerned with the Fold.
 
 Two different versions of the dataset were used, SCOP 1.55 and SCOPe 2.07. SCOP 1.55 is a smaller dataset which is a subset of SCOPe 2.07, a larger and more recent dataset. SCOP 1.55 [Ref: Biblio] and SCOPe 2.07 [Ref: Biblio] were downloaded from the Berkeley repository as tar files and unpacked. For each of the datasets, index files [Ref:Biblo] are provided.
 
 \subsubsection{Small Dataset SCOP 1.55}
 
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{| l | l | l | l |}
+        \hline 
+        Class & \makecell{Number \\ of folds} & \makecell{Number  \\ of superfamilies} & \makecell{Number \\ of families} \\ \hline
+        a. Alpha proteins & 138 & 224 & 337 \\ \hline
+        b. Beta proteins & 93 & 171 & 276 \\ \hline
+        c. Alpha and Beta proteins (a/b) & 97 & 167 & 374 \\ \hline
+        d. Alpha and beta proteins (a+b) & 184 & 263 & 391 \\ \hline
+        e. Multi-domain proteins (alpha and beta) & 28 & 28 & 35 \\ \hline
+        \makecell[l]{f. Membrane and cell surface \\ proteins and peptides} & 11 & 17 & 28 \\ \hline
+        g: Small proteins & 54 & 77 & 116 \\ \hline
+        \textbf{Total} & \textbf{605} & \textbf{947} & \textbf{1557}  \\ \hline
+        \hline
+    \end{tabular}
+    \caption{ SCOP 1.55 statistics of 13228 PDB entries}
+    \label{}
+\end{table*}
+
 SCOP 1.55 is a dataset of 31,474 proteins that have been organized into 7 Classes, 605 Folds, 947 Superfamilies, and 1557 Families. The dataset was released and updated till 2001. This dataset is a subset of the SCOPe 2.07 dataset.
 
 
-\begin{figure}[t]
+\begin{figure}
     \includegraphics[width=\linewidth]{num_proteins_fold_155}
     \caption{Here is a histogram of the number of proteins per fold for SCOP 1.55. We see that most of the folds do not have too many proteins. This could be a potential issue during learning.}
     \label{num_proteins_fold_155}
@@ -90,7 +209,7 @@ SCOP 1.55 is a dataset of 31,474 proteins that have been organized into 7 Classe
 We inspect the distribution of the proteins across the different folds. We see that most of the folds do not have a lot of proteins. The median number of proteins per fold was 10 and the histogram (Fig.\ref{num_proteins_fold_155}) show that most of our proteins have less than 50 proteins per fold. This would likely impact our learning, since there are not too many examples for the protein to learn.
 
 
-\begin{figure}[t]
+\begin{figure}
     \includegraphics[width=\linewidth]{chainlengths155}
     \caption{Here is a histogram of the protein lengths for SCOP 1.55. We see that 90\% of the proteins have length less than 500}
     \label{chainlengths155}
@@ -104,9 +223,28 @@ New methods were tested on the small dataset. This allowed us to quickly prototy
 
 \subsubsection{Large Dataset SCOPe 2.07}
 
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{| l | l | l | l |}
+        \hline 
+        Class & \makecell{Number \\ of folds} & \makecell{Number  \\ of superfamilies} & \makecell{Number \\ of families} \\ \hline
+        a. Alpha proteins & 289 & 516 & 1062 \\ \hline
+        b. Beta proteins & 178 & 370 & 968 \\ \hline
+        c. Alpha and Beta proteins (a/b) & 148 & 246 & 986 \\ \hline
+        d. Alpha and beta proteins (a+b) & 388 & 565 & 1338 \\ \hline
+        e. Multi-domain proteins (alpha and beta) & 71 & 71 & 118 \\ \hline
+        \makecell[l]{f. Membrane and cell surface \\ proteins and peptides} & 60 & 119 & 173 \\ \hline
+        g: Small proteins & 98 & 139 & 274 \\ \hline
+        \textbf{Total} & \textbf{1232} & \textbf{2026} & \textbf{4919}  \\ \hline
+        \hline
+    \end{tabular}
+    \caption{ SCOPe 2.07-stable statistics of 87224 PDB entries sorted. }
+    \label{}
+\end{table*}
+
 SCOPe 2.07 is a database of 276,231 proteins that have been organized into 7 Classes, 1232 Folds, 2026 Superfamilies, and 4919 Families. The dataset was released and updated till 2017. This dataset contains and is about 9 times larger than the SCOP 1.55 dataset.
 
-\begin{figure}[t]
+\begin{figure}
     \includegraphics[width=\linewidth]{img/blank.png}
     \caption{Here is a histogram of the number of proteins per fold for SCOP 2.07. We see that each fold has much more examples than SCOP 1.55. This may allow our model to learn better.}
     \label{numproteinfold2.07}
@@ -114,7 +252,7 @@ SCOPe 2.07 is a database of 276,231 proteins that have been organized into 7 Cla
 
 We inspect the distribution of the proteins across the different folds. We see that there are much more proteins per fold.
 
-\begin{figure}[t]
+\begin{figure}
     \includegraphics[width=\linewidth]{img/blank.png}
     \caption{Here is a histogram of the protein lengths for SCOP 2.07. We see that 90\% of the proteins have length less than 500}
     \label{chainlength2.07}
@@ -123,7 +261,29 @@ We inspect the distribution of the proteins across the different folds. We see t
 Once again, we inspect the size of the proteins in our dataset.
 
 Similar to the small dataset, we split up 70\% of the dataset for training, 15\% for validation and 15\% for testing. We adjust the sampling of the validation and testing so that a wide range of folds are represented.
-    
+
+\subsubsection{Observation of SCOP Data}
+
+The SCOP 2.07 database consists of proteins from 7 classes and 1232 folds.
+
+\subsection{SCOP Viewer}
+A number of tools were developed during the research to help view the data and guide the direction of the research. SCOP Viewer, a tool to visualize protein structure and the navigate through the different barcodes was developed to inspect the output of the protein backbone parse and the homology cycles generated by the persistent homology. The tool allows 3D navigation, allowing much more clarity in understanding more complex structures than a 2D image.
+
+The tool is very flexible for general use, allowing the user to feed in a point cloud and allowing the user to view the generated persistence homology. 
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{img/scopviewer/scopviewer1}
+    \caption{SCOP Viewer allows the user to view the generated persistence homology of the data at once. Here are the generated cycles of protein 1dly}
+    \label{}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{img/scopviewer/scopviewer2}
+    \caption{SCOP Viewer allows the user to cycle between the various types of persistent cycles generated for our protein. Here we have a cycle describing a beta sheet structure for protein 1dly. }
+    \label{}
+\end{figure}
+
+
 \subsection{Third Party Tools}
 
 A number of third party tools were used as part of the research. ProDy's (Protein Dynamics \& Sequence Analysis) python package was used to extract the backbone structure from each protein's PDB file. NumPy package was used for matrix  and statistical operations. Matplotlib package was used to generate histograms and 3D plots of the proteins and the barcodes. Pillow was used to generate the 2D images of the distance matrix and the barcode images. Keras and Tensorflow were used to setup and train the convolutional neural network. CPickle package was used to serialize and deserialize processed data.
@@ -135,34 +295,24 @@ Initially the research started on a personal laptop without a GPU and very limit
 The lack of a GPU made the training very slow. Even relatively simple methods on the smaller, SCOP 1.55, dataset took around 40 hours. Furthermore, the small storage space made it difficult to unpack and save the processed data on the larger SCOPe 2.07 dataset. These factors significantly slowed the progress of the research.
 
 
-\begin{table}[t]
+\begin{table*}[h]
     \centering
-    \begin{tabular}{c | c}
-        CPU & Intel Core i7-4650U \\ \hline
-        GPU (CUDA-enabled) & None     \\ \hline
-        RAM & 8GB    \\ \hline
-        Storage & 128GB SSD \\ \hline
-        OS & MacOSx  
+    \begin{tabular}{|c | c | c |}
+    	\hline
+    	                    &  \textbf{Personal Laptop} &  \textbf{Personal Workstation} \\ \hline
+        \textbf{CPU} & Intel Core i7-4650U &  E5-2630 6-Core \\ \hline
+         \textbf{GPU (CUDA-enabled)} & None & Nvidia GTX 1060 6GB      \\ \hline
+         \textbf{RAM} & 8GB & 16GB   \\ \hline
+         \textbf{Storage} & 128GB SSD & 500GB SSD \\ \hline
+         \textbf{OS} & MacOSx   & Ubuntu 16.02 \\ \hline
     \end{tabular}
-    \caption{Personal Latop}
-    \label{tbl:Computer 1}
-\end{table}
+    \caption{A comparison of the laptop and the workstation. Purchasing the workstation made possible significant advancements in the research by increasing the speed of computation and also allowing to work with larger datasets. }
+    \label{tbl:Computers}
+\end{table*}
 
 Due to the limitations of the personal laptop, a personal workstation was purchased at \$500 on Winter of 2018 [Ref: Table]. Although it has modest computing power relative to industry standards, the purchased machine led to significant increases in speed and efficiency of the research. The most important changes in computer resources were the GPU, which led to increases in training speed, and the increased storage, which made it possible to work on the larger SCOPe 2.07 dataset. It is also worth nothing that Ubuntu has better support than MacOSx for running CUDA.
 Most of the optimized methods took around 16 hours at most to complete on the large SCOPe 2.07 database, which is 8 times larger than the smaller SCOP 1.55. 
 
-\begin{table}[t]
-    \centering
-    \begin{tabular}{c | c}
-        CPU & E5-2630 6-Core \\ \hline
-        GPU (CUDA-enabled) & Nvidia GTX 1060 6GB     \\ \hline
-        RAM & 16GB    \\ \hline
-        Storage & 500GB SSD \\ \hline
-        OS & Ubuntu 16.02  
-    \end{tabular}
-    \caption{Personal Workstation}
-    \label{tbl:Computer 2}
-\end{table}
 
 % ===============================================================
 \section{Methods}
@@ -192,16 +342,17 @@ Each the dataset of proteins are stored as PDB (Protein Data Bank) files, which 
 
 The index files for SCOP 1.55 and SCOPe 2.07, 'dir.cla.scop.1.55.txt' and 'dir.cla.scope.2.07-stable.txt', provide important information for each protein in our database [Ref: index example]. 
 
-\begin{table}[t]
+\begin{table*}[h]
     \centering
-    \begin{tabular}{c | c}
-        Index Line & d1dlwa\_ 1dlw    A:  a.1.1.1 ... \\
-        Name & d1dlwa\_     \\
-        Class.Folds.Superfamily.Family & a.1.1.1    \\
+    \begin{tabular}{| l | l|}
+        \hline 
+        Index Entry & d1dlwa\_ 1dlw    A:  a.1.1.1 14982	cl=46456,cf=46457 ... \\ \hline
+        Name & d1dlwa\_     \\ \hline
+        Class.Folds.Superfamily.Family & a.1.1.1    \\ \hline
     \end{tabular}
-    \caption{Index Entry. The PDB file for this protein found under the subdirectory 'dl' as 'd1dlwa\_.ent'}
+    \caption{ Here is the relationship between the index entry of a protein and the protein in the dataset. The PDB file for this protein found under the subdirectory 'dl' as 'd1dlwa\_.ent'}
     \label{tbl:Index Entry}
-\end{table}
+\end{table*}
 
 For each protein, protein backbone chain is parsed from the PDB file using the 'parsePDB' function in the ProDy package. The extracted coordinates of the protein backbone is saved as a list. 
 
@@ -235,7 +386,8 @@ With the points in the protein backbone, we construct a distance matrix of the d
     \end{itemize}
     
 \begin{figure}[h]
-    \includegraphics[width=\linewidth]{uptry.png}
+	\centering
+    \includegraphics[width=.7\linewidth]{uptry.png}
     \caption{Here we have the entries in a matrix that correspond to the upper triangle. We note that since our distance matrix is symmetric with respect the diagonal line, we only need to calculate the distance values once for the entries in the upper triangle of our matrix.}
      \ref{uptry}
     \label{uptry}
@@ -450,11 +602,12 @@ A filtration is an ordering on $S_i \in \mathbb{S}$ such that
 $$S_1 \subseteq S_2 \subseteq S_3 \subseteq S_4 \subseteq ...$$.
 \end{defn}
  
-We transform our filtration of Vietoris-Rips complexes to corresponding filtration where each Vietrois-Rips complex is converted to an algebraic group that can detect holes in our simplicial complex. We say that we apply a 1-homology, $H_1$ to each simplicial complex in our filtration. We get a new filtration of the form,
+We transform our filtration of Vietoris-Rips complexes to persistent module, where each Vietrois-Rips complex is converted to an algebraic group, homology. This is because homology can detect holes and other topological structure in our simplicial complex. We say that we apply a 1-homology, $H_1$ to each simplicial complex in our filtration. We get a sequence of homologies with homomorphisms induced by the inclusion map.
 
-$$ H_1(S_1) \subseteq H_1(S_2) \subseteq H_1(S_3) \subseteq H_1(S_4) \subseteq ...$$.
+$$ H_1(S_1) \rightarrow H_1(S_2) \rightarrow H_1(S_3) \rightarrow H_1(S_4) \rightarrow ...$$.
 
 Let $S$ be our simplicial complex. We will first construct the elements that define the homology on S.
+
 \begin{defn}
 The group of $k$-Chain of $S$ is an abelian group of elements consisting of 
 $$\sum z_i s_i $$ where $z_i \in \mathbb{Z}$ and $s_i$ is a $k$-simplex of S.
@@ -472,8 +625,12 @@ $$\partial_2 (abc) := ab+bc-ac$$
 Given a simplicial complex, $S$, it's j-homology is the algebraic quotient group, $\dfrac{Z_j}{B_j}$.
 We define $Z_j = Ker \partial _j$ and $B_j = Im \partial_j$.
 We denote the j-homology of $S$ as $H_j(S)$
+We note that the homology is a vector space over $\mathbb{Z}$
 \end{defn}
  
+\begin{defn}
+The persistent homology module is a direct sum of the 
+\end{defn}
 %TODO Write peristent module and structure theorem%
 %TODO Write stabilty bottleneck and weistrauss%
 
@@ -501,7 +658,7 @@ A distance matrix of the our points is calculated. We collect the upper triangul
 
 Consider a protein with length 300. The total number of edges for a protein of length 300 is $\sum_{n=1}^{299} n =44851$. The total number of triangular simplices formed by these edges $\binom{300}{3}=\dfrac{300!}{3!297!}=4455100$.  We see that the numbers of triangular simplices increase exponentially and very quickly, even for small structures. This demands a need to reduce the computation load.
 
-A cutoff distance is determined, where we discard the edges that are larger than this value. A similar concept exists in bioinformatics, where a point of a protein are determined to be in contact with another point if their distance is within the contact distance (3 Å). The loss of information by discarding the edges larger than this value isn't an issue since because when we start considering larger edges, we start converging towards a structure where every point is connected to each other. As long as we set the cutoff distance at an appropriate value, we would still get the cycles of the protein that represent the characteristic features. Furthermore, setting of a cutoff distance has an added advantage that it filters out uninteresting cycles that are too large. We determined the cutoff distance at 6.5 Å, because we experimentally determined that 6.5 Å is an upper bound of the distances between two alpha helices. The distance between two alpha helices are less than 6.5  Å, we  consider the edges that link two alpha helices together, allowing use to extract features related to the beta sheets. Furthermore, the sequential distances between the backbone points, $P_i and P_{i+1}$, and the distances within the alpha helices are both less than 6.5, allowing use to extract features related to them as well.
+A cutoff distance is determined, where we discard the edges that are larger than this value. A similar concept exists in bioinformatics, where a point of a protein are determined to be in contact with another point if their distance is within the contact distance (3 Å). The loss of information by discarding the edges larger than this value isn't an issue since because when we start considering larger edges, we start converging towards a structure where every point is connected to each other. As long as we set the cutoff distance at an appropriate value, we would still get the cycles of the protein that represent the characteristic features. Furthermore, setting of a cutoff distance has an added advantage that it filters out uninteresting cycles that are too large. We determined the cutoff distance at 6.5 Å, because we experimentally determined that 6.5 Å is an upper bound of the distances between two alpha helices. The distance between two alpha helices are less than 6.5  Å, we  consider the edges that link two alpha helices together, allowing use to extract features related to the beta sheets. Furthermore, the most sequential distances between the backbone points, $P_i and P_{i+1}$, and the distances within the alpha helices are both less than 6.5, allowing use to extract features related to them as well. It is also know that due to   tetrahedral chemical bonding at the carbon backbone atom due to the pleated appearance of beta-strand causes the distance between beta sheets to be approximately 6 Å \cite{fastSCOP}.
 
 For our set of N points, the cutoff distance is determined as $\dfrac{1}{6}$ of the longest length, which is ?. Below are the collection of points 
 
@@ -624,21 +781,21 @@ We look at column ? of the main matrix for our example. Here we see that column 
 
 We inspect the persistence homology of our protein 1ux8, a protein of length 118. At each point on the protein backbone, we search the radius around the point to find nearby points.
 
-\begin{figure}[t]
+\begin{figure}
     \includegraphics[width=\linewidth]{img/hom/ballRad1.png}
     \caption{A search is done near each point at increasing radii to find the nearby points }
     \label{ballRad1}
 \end{figure}
 The red edges indicate that the two points are less than 3.5 distance away. Making them connected.
 As we increase the radius, we connect more and more points.
-\begin{figure}[t]
+\begin{figure}
     \includegraphics[width=\linewidth]{img/hom/ballRad2.png}
     \caption{Edges between points are formed as the search radii become larger}
     \label{ballRad2}
 \end{figure}
 
 The connections between these points form polygons (simplexes).
-\begin{figure}[t]
+\begin{figure}
     \includegraphics[width=\linewidth]{img/hom/ballRad3.png}
     \caption{The structure of the protein is detected as we increase the radii at around 6 Ångströms}
     \label{ballRad3}
@@ -661,17 +818,17 @@ Below we have two examples of the polygons.
     \label{Simplex2}
 \end{figure}
 
+\subsubsection{ Sparse Persistence Homology}
+
+\subsubsection{ Backbone Aware Persistence Homology}
+
+\subsubsection{ Persistence Images}
 
 \begin{figure}
     \includegraphics[width=\linewidth]{persistenceimages.png}
     \caption{For a protein, a plot of the barcodes is constructed on a 2D plane where x-coordinate is the birth and the y-coordinate is the persistence. Then, a blurred resolution of the plot is taken as the persistent image.}
     \label{persistenceimages}
 \end{figure}
-\subsubsection{ Sparse Persistence Homology}
-
-\subsubsection{ Backbone Aware Persistence Homology}
-
-\subsubsection{ Persistence Images}
 
 The persistent homology of each protein is converted into an input feature called persistent images. For each simplex in the homology, we plot it on a 2-dimensional vector space with the x coordinate being the birth and the y coordinate being the persistence of the simplex. For the simplices that persist infinitely, we plot the y coordinates well above the maximum persistence.
 
@@ -804,6 +961,13 @@ Fox NK, Brenner SE, Chandonia JM.
 \textit{SCOPe: Structural Classification of Proteins—extended, integrating SCOP and ASTRAL data and classification of new structures.}
 Nucleic Acids Research 42:D304-309. doi: 10.1093/nar/gkt1240
 
+\bibitem{SCOP}
+Murzin AG, Brenner SE, Hubbard TJP, Chothia C. 1995. SCOP: a structural classification of proteins database for the investigation of sequences and structures. Journal of Molecular Biology 247:536-540.
+
+\bibitem{fastSCOP}
+Fast SCOP Classification of Structural Class and Fold Using Secondary
+Structure Mining in Distance Matrix
+Jian-Yu Shi and Yan-Ning Zhang
 
 \bibitem{pdb}
 Protein Data Bank Guide
@@ -811,6 +975,11 @@ Protein Data Bank Guide
     New Changes in Version 3.20}
 Nucleic Acids Research 42:D304-309. doi: 10.1093/nar/gkt1240
 https://cdn.rcsb.org/wwpdb/docs/documentation/file-format/changesv3.20.pdf
+
+\bibitem{SCOPHom}
+Cang Z, Mu L, Wu K, Opron K, Xia K, Wei GW. A topological approach for protein classification. Molecular based Mathematical Biology. 2015;3:140–162.
+
+%figures
 
 \bibitem{fig:convexHull}
 [Untitled illustration of convex hull]. Retrieved April 23, 2019
@@ -827,6 +996,8 @@ https://www.researchgate.net/figure/Computation-of-PH-for-a-point-cloud-using-th
 \bibitem{fig:simpcomplex}
 [A simplicial 3-complex]. Retrieved April 23, 2019 https://www.wikiwand.com/en/Simplicial\_complex
 
+\bibitem{fig:simpcomplex}
+https://www.researchgate.net/figure/Persistent-homology-of-a-sample-of-genetic-sequences-Barcode-and-simplicial-complexes\_fig4\_277022824
 \end{thebibliography}
 
 \end{document}
