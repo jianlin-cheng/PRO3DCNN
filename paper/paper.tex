@@ -5,6 +5,7 @@
 
 \documentclass[12pt, a4paper, twocolumn, fullpage]{article}
 \usepackage{algorithm}
+\usepackage{float}
 \usepackage{makecell}
 \usepackage{color}
 \usepackage{graphicx}
@@ -12,6 +13,7 @@
 \usepackage{amsthm}
 \usepackage{lipsum}
 \usepackage{algorithmic}
+\usepackage{subcaption}
 %\usepackage[round]{natbib} TODO in future
 \usepackage{titlesec}
 \titleformat*{\section}{\Large\bfseries}
@@ -38,7 +40,7 @@
 %---------
 %   ARTICLE INFORMATION
 %----------------
-\title{Topological Classification of SCOPe}
+\title{PRO3DCNN: convolutional neural network for mapping protein structure to folds}
 \author{Yechan Hong, Jan Segert, and Jianlin Cheng
 \and University of Missouri, Columbia}
 \date{\today}
@@ -56,7 +58,7 @@
 We extract two classes of input features for each protein's carbon alpha backbone: distance matrix and the persistent homology barcodes. Due to restrictions in our computing resources, we make sample every other point in the carbon alpha chain. We find that it does not lead to significant loss in accuracy.
 Using the distance matrix, we achieve an accuracy of 86\% on the entire dataset.
 
-We extract significant topological simplices of the protein by using persistent homology. We format the persistent homology data into various input features: persistence images \cite{persistenceImages}, simplex distance map, and simplex grouping.  With persistence images of 100x100 resolution, we achieve an accuracy of 62\% on SCOP 1.55. With simplex distance maps of 100x100 resolution, we achieve an accuracy of 70\%. With simplex groupings, we achieve an accuracy of :TODO\%.
+We extract significant topological simplices of the protein by using persistent homology. We format the persistent homology data into various input features: persistence images \cite{persistenceImages}, simplex distance map, and simplex grouping.  With persistence images of 100x100 resolution, we achieve an accuracy of 62\% on SCOP 1.55. With simplex distance maps of 100x100 resolution, we achieve an accuracy of 70\%.
     
 %   We also combine the different classes of input features to achieve an accuracy of :TODO\%. An analysis on the network is performed to qualitatively describe the features the network is using to accurately classify the proteins.
 
@@ -91,7 +93,7 @@ Fold and class, the higher levels in our hierarchy as classified based on the si
    \item \textbf{Classes} based mainly on secondary structure content and organization.
 \end{itemize}
 
-The highest level of the hierarchy, class, consists of 7 categories. Alpha proteins (a), beta proteins (b), alpha/beta proteins (c), alpha+beta proteins (d), multi-domain proteins (e), membrane and cell surface proteins and peptides (f), and small proteins (g). Class (f) and (g)'s name are descriptive of their members. The original SCOP publication clarifies the members of class a-e \cite(SCOP).
+The highest level of the hierarchy, class, consists of 7 categories. Alpha proteins (a), beta proteins (b), alpha/beta proteins (c), alpha+beta proteins (d), multi-domain proteins (e), membrane and cell surface proteins and peptides (f), and small proteins (g). The original SCOP publication clarifies the members of class a-e \cite{SCOP}. Class (f) and (g)'s name are descriptive of their members.
 
 \begin{itemize}
 \item \textbf{Alpha proteins} For proteins whose structure is essentially formed by a-helices.
@@ -111,10 +113,11 @@ In this paper, we shift the focus from a protein's sequence to the topological s
 
 Since each fold belongs to only one class, predicting the protein fold also predicts the protein's class. Thus, we narrow the focus of our problem to predicting a protein's fold.
 
-
 We introduce two methods for classifying protein fold. First, we use a distance matrix as an input feature to a convolutional neural network. Second, we use persistent homology to extract topological features of our data and plot these features as an input feature to a convolutional neural network.
+\\
 
-\textbf{Distance Matrix} \\
+\noindent
+\textbf{Distance Matrix}\\
 Each protein has a backbone structure that is formed by  series of connecting points. The backbone structure of the protein is characteristic of the protein's general shape. A distance matrix of the protein's backbone is created, where the rth row and cth column of the matrix gives the distance between the rth point and the cth point of the protein backbone. Then this matrix is used as an input to our convolutional neural network.
 
 There has been existing work (Fast SCOP Classification) on using the distance matrix to classify proteins from a very small subset of SCOP database \cite{fastSCOP} of 698 proteins. The distance matrix is computed for the protein and fed into a multi-class support vector machine (SVM) of the One-Versus-One (OVO) variant. This approach achieved and accuracy of 74.55\% on this small subset of SCOP. 
@@ -138,7 +141,7 @@ We take a look at few of the representative proteins from alpha proteins, beta p
 
 Fast SCOP Classification extracts regions of interest (ROI) from the distance matrix by decomposing the upper triangle of the distance matrix into ROI. These regions attempt to capture the regions of the distance matrix where there are alpha helices and beta sheets. The relationships between these regions of interest are abstracted into a feature set which is given to the SVM for fold classification.
 
-In comparison, our method uses a convolutional neural network to have our model learn the ROI on it's own. The CNN has much more advantages over the decomposition method because complex relationships between regions of interest can be modeled by the hidden layer and also the regions of interests are dynamically formed as the model is trained. Furthermore, there aren't supervisions into constructing the high-level feature set of ROIs, allowing the model to learn complex behaviors that may elude or be difficult to define clearly. However, a downside to the CNN is that it is very computationally intensive, requiring a long training time and a large set of data to learn effectively.
+In comparison to our method, we employ a convolutional neural network to have the model learn the ROIs on it's own. The CNN has much more advantages over the decomposition method because complex relationships between regions of interest can be modeled by the hidden layer. Also the regions of interests are dynamically formed as the model is trained. There aren't supervisions into constructing the high-level feature set of ROIs, allowing the model to learn complex behaviors that may elusive or be difficult to define clearly. However, a downside to the CNN is that it is very computationally intensive, requiring a long training time and a large set of data to learn effectively. \\
 
 \begin{figure}
 	\centering
@@ -147,7 +150,7 @@ In comparison, our method uses a convolutional neural network to have our model 
     \label{fig:persistentHomEx}
 \end{figure}
 
-
+\noindent
 \textbf{Persistent Homology}  \\
 Persistent homology is a mathematical theory from algebraic topology that allows the characterization of a point cloud by the observing creations of cycles in the data and how long these cycles persist. We iterate over a real number variable, $\epsilon$, and connect the edges in our point cloud whose length is smaller than $\epsilon$. 
 
@@ -155,29 +158,43 @@ A cycle is formed when a closed loop is formed by the path of the edges. In the 
 
 There has been existing attempts at using Persistent Homology to classify the highest level of SCOP hierarchy \cite{SCOPHom}. Cang applies persistent homology on a small set of 900 proteins selected from Alpha, Beta, and Alpha/Beta classes. Each class is represented by 300 proteins and 60 proteins were selected for testing. A SVM is used to classify the classes with with an average accuracy of 85\%. 
 
-When we observe the barcode of the proteins from the different classes we do see some distinguishing patterns.
-scopHom
-\begin{figure}
+When we observe the barcode of the proteins from the different classes we do see some distinguishing patterns (Fig.\ref{fig:scopHom}). The proteins with alpha helices have a long curved edge towards the top of the barcode, while proteins with beta sheets have a thicker bar towards the bottom.
+
+\begin{figure*}
 	\centering
-    \includegraphics[width=\linewidth]{img/hom/scopHom.png}
-    \caption{Here is persistent homology characterizing the point cloud of four points. We see that a rectangular cycle is formed when the 4 boundary edges of the rectangles are formed at $\epsilon = 2.6$. We see that this rectangular cycle is dies at   $\epsilon = 3.4$}
-    \label{fig:persistentHomEx}
-\end{figure}
+    \includegraphics[width=.8\linewidth]{img/hom/scopHom.png}
+    \caption{Persistent homology was used to calculate the barcodes on three proteins from Alpha protein (a), Alpha/Beta protein (b), Beta protein(c) classes. The proteins with alpha helices (red) have elongated structures at the top of the barcode while proteins with beta sheets (blue) are thick at the base.}
+    \label{fig:scopHom}
+\end{figure*}
+ In comparison to our method, we classify proteins based on folds, a more specific level of the SCOP hierachy. Our task of classification is much more extensive than the classification task performed in Cang. We classify 276,231 proteins into 1232 labels compared to the 900 proteins into 3 labels. We also use a convolutional neural network as opposed to a SVM. 
+ 
+In the examples we have discussed, we note that the distance matrices contains much more information than the barcodes. This difference is resolution may cause the matrices to perform better than the barcodes.
 
 % ====================================
-\section{Material}
+\section{Materials}
 %====================================
 
 %----------------------
 \subsection{Datasets}
 %----------------------
 
-The SCOP database is a database of proteins organized into hierarchical classes based on their shape and function. There are 4 levels of the important hierarchy (top down): Class, Folds, Superfamily, Family. We will be primarily concerned with the Fold.
+The SCOP and SCOPe database is a database of proteins organized into hierarchical classes based on their shape and function. There are 4 levels of the important hierarchy (top down): Class, Folds, Superfamily, Family. We will be primarily concerned with the Fold.
 
-Two different versions of the dataset were used, SCOP 1.55 and SCOPe 2.07. SCOP 1.55 is a smaller dataset which is a subset of SCOPe 2.07, a larger and more recent dataset. SCOP 1.55 [Ref: Biblio] and SCOPe 2.07 [Ref: Biblio] were downloaded from the Berkeley repository as tar files and unpacked. For each of the datasets, index files [Ref:Biblo] are provided.
+Two different versions of the dataset were used, SCOP 1.55 and SCOPe 2.07. SCOP 1.55 is a smaller dataset which is a subset of SCOPe 2.07, a larger and more recent dataset. SCOP 1.55  and SCOPe 2.07 were downloaded from the Berkeley repository as tar files and unpacked. For each of the datasets, index files are provided.
+
+SCOPe 2.07 has about 8 times more entries than SCOP 1.55 as well twice the amount of protein folds that we need classify. The rapid growth of SCOP 1.55 to SCOPe 2.07 can be attributed to the use of automatic classification that was applied to assign hierarchy to newly discovered proteins. 
+
+\begin{figure*}
+	\centering
+    \includegraphics[width=.9\textwidth]{img/SCOP/scopchanges.png}
+    \caption{A graph of the development of our dataset from SCOP 1.55 to SCOPe 2.07}
+    \label{SCOPchanges}
+\end{figure*}
+
+Because of computation restrictions early on our research, we could not apply our methods to the large SCOPe 2.07 dataset which had a unzipped size of about 40gb. The methods in our research initially started by applying fold classification on SCOP 1.55. Since SCOP 1.55 is a subset of SCOPe 2.07, there weren't any surprises in applying the methods from SCOP 1.55 to SCOPe 2.07. Later on our research, when we were developing new methods, we were able to follow this similar workflow of working in the smaller dataset and then applying our method on the larger dataset. This workflow allowed us to quickly prototype and optimize our methods before running it on the larger datset.
+
 
 \subsubsection{Small Dataset SCOP 1.55}
-
 \begin{table*}[h]
     \centering
     \begin{tabular}{| l | l | l | l |}
@@ -193,7 +210,7 @@ Two different versions of the dataset were used, SCOP 1.55 and SCOPe 2.07. SCOP 
         \textbf{Total} & \textbf{605} & \textbf{947} & \textbf{1557}  \\ \hline
         \hline
     \end{tabular}
-    \caption{ SCOP 1.55 statistics of 13228 PDB entries}
+    \caption{ SCOP 1.55 statistics of 31474 entries}
     \label{}
 \end{table*}
 
@@ -215,11 +232,9 @@ We inspect the distribution of the proteins across the different folds. We see t
     \label{chainlengths155}
 \end{figure}
 
-We also inspect the size of the proteins in our database (Fig. \ref{chainlengths155}). We define the size of the protein to be the length of the protein (Background Information: Proteins Information). We see that most of the proteins have length less than 300. We do see a small amount of our proteins having lengths between 600 to 800. 
+We also inspect the length of the proteins in our database (Fig. \ref{chainlengths155}). We define the size of the protein to be the length of the protein (Background Information: Proteins Information). We see that most of the proteins have length less than 300. We do see a small amount of our proteins having lengths between 600 to 800. 
 
 We split up 70\% of the dataset for training, 15\% for validation and 15\% for testing. We adjust the sampling of the validation and testing so that a wide range of folds are represented.
-
-New methods were tested on the small dataset. This allowed us to quickly prototype and optimize our methods to run on the larger dataset.
 
 \subsubsection{Large Dataset SCOPe 2.07}
 
@@ -238,7 +253,7 @@ New methods were tested on the small dataset. This allowed us to quickly prototy
         \textbf{Total} & \textbf{1232} & \textbf{2026} & \textbf{4919}  \\ \hline
         \hline
     \end{tabular}
-    \caption{ SCOPe 2.07-stable statistics of 87224 PDB entries sorted. }
+    \caption{ SCOPe 2.07-stable statistics of 276231 entries. }
     \label{}
 \end{table*}
 
@@ -258,15 +273,89 @@ We inspect the distribution of the proteins across the different folds. We see t
     \label{chainlength2.07}
 \end{figure}
 
-Once again, we inspect the size of the proteins in our dataset.
+Once again, we inspect the length of the proteins in our dataset.
 
 Similar to the small dataset, we split up 70\% of the dataset for training, 15\% for validation and 15\% for testing. We adjust the sampling of the validation and testing so that a wide range of folds are represented.
 
-\subsubsection{Observation of SCOP Data}
+\subsubsection{Members of SCOP Classes}
 
-The SCOP 2.07 database consists of proteins from 7 classes and 1232 folds.
+We take a look at the members of the proteins in each of the 7 SCOP classes to understand their composition When looking at the first 4 classes (Fig.\ref{fig:SCOPClass-abcd}) we see that most of the protein in the Alpha, Beta, Alpha/Beta, and Alpha+Beta classes fall in line with their descriptions in the SCOP paper. Alpha proteins consists almost exclusively of alpha helices, beta proteins consist almost exclusively of beta sheets, Alpha/Beta proteins consist of alpha helices and beta sheets very tightly intertwined, and Alpha+Beta proteins consist of alpha helices and beta sheets relatively in separate locations.
 
+\begin{figure*}[t]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{img/SCOP/aProtein-d1kdxa_}
+  \caption{Alpha protein d1kdxa\_}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{img/SCOP/bProtein-d2giyb2}
+  \caption{Beta protein d2giyb2}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{img/SCOP/cProtein-d1btma_}
+  \caption{Alpha/Beta protein d1btma\_}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{img/SCOP/dProtein-d1bc4a_}
+  \caption{Alpha+Beta protein d1bc4a\_}
+\end{subfigure}%
+\caption{Here are sample proteins representative of the first 4 types of SCOP classes. We note that most of the proteins in these classes show clear structural similarity.}
+\label{fig:SCOPClass-abcd}
+\end{figure*}
+
+When we look at the remaining classes, we see a wider range of topological structures within each class \ref{fig:SCOPClass-efg}. Within the Multi-domain protein class, we see protein d1i99i (Fig.\ref{e1}), which has Alpha Helices and Beta sheets in relatively different locations, and protein d1x75a1 (Fig.\ref{e2}), which consists only of alpha helices. Within the Membrane and cell surface protein and peptide class, we see protein d1uaza\_ (Fig.\ref{f1}) which consists entirely of alpha helices and protein d1m3ia (Fig.\ref{f2}) which consists of alpha helices and beta sheets interspersed throughout the protein. Finally, for the small protein class, we see protein d1ehsa\_ (Fig.\ref{g1}), which is comprised solely of alpha helices and protein d1wj2a\_ (Fig.\ref{g2}). which is comprised solely of beta sheets. Furthermore we note that protein d1i99i (Fig.\ref{e1}) has structural similarity to proteins in Alpha+Beta Class and protein d1x75a1 (Fig.\ref{e2}) has structural similarity to proteins in Alpha Class. These inter-class structural similarities may pose a challenge when trying to classify these proteins accurately.
+
+\begin{figure*}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{img/SCOP/eProtein-d1i99i_}
+  \caption{Multi-domain protein d1i99i\_}
+  \label{e1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{img/SCOP/eProtein-d1x75a1}
+  \caption{Multi-domain protein d1x75a1}
+  \label{e2}
+\end{subfigure}
+
+\begin{subfigure}{.45\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{img/SCOP/f1Protein-d1uaza_}
+  \caption{Membrane and cell surface protein and peptide d1uaza\_}
+  \label{f1}
+\end{subfigure}%
+\begin{subfigure}{.45\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{img/SCOP/f2Protein-d1m3ia}
+  \caption{Membrane and cell surface protein and peptide d1m3ia}
+  \label{f2}
+\end{subfigure}%
+
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{img/SCOP/g2Protein-d1ehsa_}
+  \caption{Small protein d1ehsa\_}
+  \label{g1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{img/SCOP/gSmallProtein-d1wj2a_}
+  \caption{Small protein d1wj2a\_}
+  \label{g2}
+\end{subfigure}%
+\caption{Here are pairs of very different proteins within each of the last three types of SCOP classes. We note that some of these proteins have structures very similar to some of the proteins in the first four SCOP classes. These variations indicate structural dissimilarity within the last three SCOP classes.}
+\label{fig:SCOPClass-efg}
+\end{figure*}
+
+%----------------------
 \subsection{SCOP Viewer}
+%----------------------
 A number of tools were developed during the research to help view the data and guide the direction of the research. SCOP Viewer, a tool to visualize protein structure and the navigate through the different barcodes was developed to inspect the output of the protein backbone parse and the homology cycles generated by the persistent homology. The tool allows 3D navigation, allowing much more clarity in understanding more complex structures than a 2D image.
 
 The tool is very flexible for general use, allowing the user to feed in a point cloud and allowing the user to view the generated persistence homology. 
@@ -283,13 +372,13 @@ The tool is very flexible for general use, allowing the user to feed in a point 
     \label{}
 \end{figure}
 
-
+%----------------------
 \subsection{Third Party Tools}
-
+%----------------------
 A number of third party tools were used as part of the research. ProDy's (Protein Dynamics \& Sequence Analysis) python package was used to extract the backbone structure from each protein's PDB file. NumPy package was used for matrix  and statistical operations. Matplotlib package was used to generate histograms and 3D plots of the proteins and the barcodes. Pillow was used to generate the 2D images of the distance matrix and the barcode images. Keras and Tensorflow were used to setup and train the convolutional neural network. CPickle package was used to serialize and deserialize processed data.
-    
+%---------------------- 
 \subsection{Computing Resources}
-
+%----------------------
 Initially the research started on a personal laptop without a GPU and very limited storage space [Ref: Table]. Since the unpacked data of SCOPe 2.07 took up around 40GB and the laptop ran out of storage space, the data was stored on a flash drive. 
 
 The lack of a GPU made the training very slow. Even relatively simple methods on the smaller, SCOP 1.55, dataset took around 40 hours. Furthermore, the small storage space made it difficult to unpack and save the processed data on the larger SCOPe 2.07 dataset. These factors significantly slowed the progress of the research.
@@ -321,7 +410,7 @@ Most of the optimized methods took around 16 hours at most to complete on the la
 %---------------------
 \subsection{ Background Information: Proteins} \label{Background Information: Proteins}
 %---------------------
-A protein is an sequence of amino acids, 2 compounds which link into a protein chain. The interaction between amino acids and the surrounding environment determine the how the protein folds into its structure.
+A protein is an sequence of amino acids, a set of 22 compounds which link sequentially into a protein chain. The interaction between amino acids and the surrounding environment determine the how the protein folds into its structure.
 
 For a protein that we are tasked to classify, we are provided with many information: Protein sequence and the sequential coordinates of every atom on our protein. Since we are primarily interested in the topological features of our data, we characterize the protein's shape with the protein backbone. The protein's backbone is constructed with a sequence of points, where each point represents each amino acid in a 3D space. The point representation of each amino acid is determined by the algorithm 'parsePDB' in the ProDy package. 
 
@@ -363,7 +452,7 @@ Because all of the protein coordinates do not fit on the RAM, they are saved in 
 %---------------------
 \subsection{ Distance Matrix}
 %---------------------
-With the points in the protein backbone, we construct a distance matrix of the distances between the points. The unit of the distances Ångströms, the units of provided in the protein PDB files. [Protein Data Bank]. We used the Euclidean Distance for the distances between the points.
+With the points in the protein backbone, we construct a distance matrix of the distances between the points. The unit of the distances Ångströms, the units of provided in the protein PDB files. [Protein Data Bank]. We used the Euclidean Distance for the distances between the points.\\
 
     
 \begin{defn}
@@ -376,9 +465,8 @@ With the points in the protein backbone, we construct a distance matrix of the d
 \end{defn}
 
 \noindent
-\textbf{Remark}
-\\
-    We note the following for any distance matrix $M_{P}$.
+\textbf{Remark}\\
+We note the following for any distance matrix $M_{P}$.
     \begin{itemize}
         \item $M_{ii} = 0$
         \item $M_{ij} = M_{ji}$
@@ -428,12 +516,14 @@ We inspect the topological structure of our protein '1ux8'. It is a protein of l
     
 We analyze the distance matrix to see if important structural features are represented in the matrix. To help with visualization, the distance matrix is mapped to an image of equal size, where closest distances appear in white and furthest distances appear in black. Distances in between take a gray hue with the intensity based on its value.
 \\
+
 \noindent
-\textbf{Feature Protein Backbone:}
+\textbf{Feature Protein Backbone:}\\
 Along the diagonal line of the image, the distance matrix is completely white. This is because the distance between a point to itself is zero [Ref: Remark]. We note that this diagonal white line uniquely identifies the protein backbone chain (Since the distance between. Having a clear representation of the protein backbone is important because  it is a central structure that other features can be spatially oriented around.
 \\
+
 \noindent
-\textbf{Feature Alpha Helix:}
+\textbf{Feature Alpha Helix:}\\
 We note thick white regions running parallel along the diagonal line of the image [Ref: Image]. These regions indicate that at a given point in the chain, it is in close proximity to the nearby neighbors [Ref Diagram]. We also note that in for a point in an Alpha Helix, it is also in close proximity to it's nearby neighbors. In our example, these four thick white regions correspond the the four helix structures on our protein.
     
 \begin{figure}[h]
@@ -456,11 +546,11 @@ A helix is composed of points in the protein backbone. Suppose $H$ is the set of
 \end{defn}
 
 \noindent
-\textbf{Feature Beta Sheet:}
+\textbf{Feature Beta Sheet:}\\
 We note patches of thick white lines in the intersection of the rows belonging to a helix and the columns belonging to another helix [Ref Diagram]. This indicates that the points of the two helices, and hence the two helices, are in close proximity. In particular, the regions are close sequentially: the ith point in helix A is close to the jth point in helix B and the i+1 th point in helix A is close to the j-1 th point in helix B. This sequential relationship describes a Anti-parallel Beta Sheets. For Parallel Beta Sheets, the i+1 th point would be close to the j+1 th point. In our example, the 3 pairs of Beta-sheets formed the 4 helices are represented in our distance matrix.
-    
-\subsection{ Cropped Distance Matrix}
-
+%----------------------    
+\subsubsection{ Cropped Distance Matrix}
+%----------------------
 Some proteins have a length of 600, making the distance matrix have a size of 600x600. However, due limitations on the GPU memory, it is not possible to construct a convolutional network with our input being 600x600. We would also like to crop the distance matrix such that the central backbone of the protein runs through the diagonal of our matrix. To crop and preserve the diagonal protein backbone, we take a 100x100 window and crop our matrix by shifting row and columns at the same time by 50 indices.
 
 \begin{figure}[h]
@@ -482,9 +572,9 @@ Because of the limitations set by the windowed distance matrix, a point in the b
 We note that if a distance matrix is smaller than our cropping window size, we pad the distance matrix.
 
 Cropping the dataset increases the number of examples in the dataset. Because we don't want our training data to have similarities, we make sure that the training, validation, and testing groups do not share cropped matrices from the same protein.
-
-\subsection{ Sparse Distance Matrix}
-
+%----------------------
+\subsubsection{ Sparse Distance Matrix}
+%----------------------
 In our example, we see that cropping the distance matrix diminishes it's ability to represent long range contact information. We develop an alternative approach to reduce the size of the distance matrix while preserving it's ability to represent long range contact information.
 
 \begin{figure}[h]
@@ -507,21 +597,6 @@ From the sparse protein backbone, we construct a sparse distance matrix in the s
 
 For the protein of length 600, the sparse distance matrix would reduce the matrix's size from 600x600 to 300x300. This is still too big for due to the limitations on the GPU memory. So we crop the sparse distance matrix in the same manner as a regular distance matrix. We also take care such that the training, validation, and testing groups do not share cropped matrices from the same protein.
 
-%----------------------
-\subsection{Convolutional Network Model}
-%----------------------
-
-The features from each of these subsections were fed into a a 2D-convolutional network. The architecture of the 2D-convolutional network for mapping protein structure to folds contains, in order, 32 3x3 convolutional layers, 64 3x3 convolutional layers, 2x2 max pooling, 128 dense layer, and the output layer.
-
-\begin{figure}
-\includegraphics[width=\linewidth]{model_plot.png}
-\caption{The architecture of a 2D deep convolutional network for protein fold classification. Convolutional layers were added as part of a traditional image classification network. Dense layers were added to help the network use the discovered features in the images. A dropout layer was added to make our network learn an ensemble of different models}
-\label{model_plot}
-\end{figure}
-
-This is a relatively simple network. However, for our task of classifying quarter million of proteins, it performs exceptionally well. 
-\\
-There are a lot of benefits for a simple network performing well. First, it ensures that the model is not overfitting the data. Second, it is much more feasible to inspect the network to understand how it is learning.
 
 
 %---------------------
@@ -532,7 +607,9 @@ There are a lot of benefits for a simple network performing well. First, it ensu
 
 \subsubsection{ Mathematical Background}
 
-We discuss the mathematical theory behind persistent homology prior to introducing an algorithm to compute it.  First, we describe the elementary mathematical objects. Then we describe the topological features of a data that we want to extract using the structure theorem. We also discuss the stability of the topological features described by the stability theorem.
+A good deal of effort went into trying to make the mathematical definitions used this section self-contained. One could read through this section to get a general understanding of the theory behind persistence homology. However, there are some fundamental concepts in abstract and linear algebra that were not defined. These are, but not limited to the following: group, normal subgroup, quotient group, homomorphism, kernel, image, vector space, dimension of a vector space.
+
+We discuss the mathematical theory behind persistent homology prior to introducing an algorithm to compute it.  First, we describe the elementary mathematical objects. Then we describe the topological features of a data that we want to extract using the homology and the structure theorem. We also discuss the stability of the topological features described by the stability theorem.
 
 \begin{figure}[t]
 \centering
@@ -542,13 +619,12 @@ We discuss the mathematical theory behind persistent homology prior to introduci
 \end{figure}
 
 \begin{defn}
-A convex set, $C \subset \mathbb{R}^n$, is a set where $\forall a,b \in C, t \in [0,1] ta+(1-t)b \in C$. [Ref: Sakai]
+A \textbf{convex set}, $C \subset \mathbb{R}^n$, is a set where $\forall a,b \in C$, $t \in [0,1]$ $ta+(1-t)b \in C$.
 \end{defn}
 
 \begin{defn}
-A convex hull $<A>$ of a set of points, $A \subset \mathbb{R}^n$ is defined by 
+A \textbf{convex hull} $<A>$ of a set of points, $A \subset \mathbb{R}^n$ is defined by 
 $$<A> := \bigcap \{C \mid C \text{ convex in } \mathbb{R}^n \text{ , } A\subset C \} $$
-[Ref: Sakai]
 \end{defn}
 
 \begin{figure}[t]
@@ -558,18 +634,21 @@ $$<A> := \bigcap \{C \mid C \text{ convex in } \mathbb{R}^n \text{ , } A\subset 
 \end{figure}
 
 \begin{defn}
-An n-simplex is a convex hull of n points. When we refer to varying sizes n-simplices or when the size is not determined, we will call them just simplices.
+An \textbf{$n$-simplex} is a convex hull of $n+1$ points. When we refer to varying sizes n-simplices together or when the size is undetermined, we will call them just simplex/simplices.\\
+We note that $0$-simplex is a point, $1$-simplex is an edge, and $2$-simplex is a trangle.
 \end{defn}
 
 \begin{defn}
 Let $\sigma$ be a simplex.
-The vertices of $\sigma$ are its points.
-The face of $\sigma$ are the simplices formed by subset of the vertices of $\sigma$.
-A n-face is a face of $\sigma$ with $n+1$ vertices.
+\begin{itemize}
+\item The \textbf{vertices} of $\sigma$ are its points.
+\item The \textbf{face} of $\sigma$ are the simplices formed by subset of the vertices of $\sigma$.
+\item A  \textbf{n-face} is a face of $\sigma$ with $n+1$ vertices.
+\end{itemize}
 \end{defn}
 
 \begin{defn}
-Simplicial complex is a set of simplices, $S $, such that 
+\textbf{Simplicial complex} is a set of simplices, $S $, such that 
 \begin{itemize}
     \item Any face of a simplex $\sigma \in S$ is in $S$.
     \item The intersection of any two simplices in $ S $ is in $ S $
@@ -582,11 +661,12 @@ Simplicial complex is a set of simplices, $S $, such that
     \label{simpcomplex}
 \end{figure}
 
-Now that we have defined the foundational definitions, we begin to define structures relevant to our problem of extracting topological features from our set of points in the protein backbone. First, we will observe the state of our data as we create triangular simplices from the points in our data by adding edges of increasing length. We do this by forming Vietoris-Rips complexes.
+Now that we have defined the foundational definitions, we begin to define structures that can describe the topological characteristics of the points in a protein's backbone. First, we will observe the structure of our protein as we create simplices by adding edges of increasing length between the points on the protein's backbone. We do this by forming Vietoris-Rips complexes.
 
 \begin{defn}
-Given a set of points with a metric, a $\epsilon$-Vietoris-Rips complex is a simplicial complex which is formed on the set of points  by connecting the points with distance less than or equal to $\epsilon$
+Given a set of points with a metric, a \textbf{$\epsilon$-Vietoris-Rips complex} on the set of points is a simplicial complex which is formed by connecting the points with distance less than or equal to $\epsilon$.
 \end{defn}
+
 
 \begin{figure}[t]
     \includegraphics[width=\linewidth]{img/mathDef/ripscomplex.png}
@@ -594,45 +674,121 @@ Given a set of points with a metric, a $\epsilon$-Vietoris-Rips complex is a sim
     \label{}
 \end{figure}
 
-We see how the state of our data changes as we add edges between points of increasing length by ordering the $\epsilon$-Vietoris-Rips complexes in increasing order of $\epsilon$. This ordering is a filtration on the set of all Vietoris-Rips complexes on our data. If $\epsilon_1 \leq \epsilon_2$ then $\epsilon_1$-Vietoris-Rips complex is contained in  $\epsilon_2$-Vietoris-Rips complex. This is because edges less than $\epsilon_1$ are also less than $\epsilon_2$ and thus are formed in  $\epsilon_2$-Vietoris-Rips complex.
+First, we create $\epsilon$-Vietoris-Rips complexes of our points in the protein backbone for all intervals of $\epsilon$. We see how the state of our data changes as we add edges between points of increasing length by ordering the $\epsilon$-Vietoris-Rips complexes in increasing order of $\epsilon$. This ordering is a filtration on the set of all Vietoris-Rips complexes on our data. If $\epsilon_1 \leq \epsilon_2$ then $\epsilon_1$-Vietoris-Rips complex is contained in  $\epsilon_2$-Vietoris-Rips complex. This is because edges less than $\epsilon_1$ are also less than $\epsilon_2$ and thus are formed in  $\epsilon_2$-Vietoris-Rips complex.
 
 \begin{defn}
-Let $\mathbb{S}$ be a collection of sets such that $\forall A \in \mathbb{S}$, $\exists B \in \mathbb{S}$ such that $A \subseteq B$ or $B \subseteq A$. That is given an element in our collection, it is contained or contains another set in our collection. 
-A filtration is an ordering on $S_i \in \mathbb{S}$ such that
+\textbf{A filtration} is an ordering on $S_i \in \mathbb{S}$ such that
 $$S_1 \subseteq S_2 \subseteq S_3 \subseteq S_4 \subseteq ...$$.
 \end{defn}
+
+We denote $\epsilon$-Vietoris-Rips complexes as $V_{\epsilon}$ and write our filtration of $V_{\epsilon}$s.
+
+
+ $$V_{\epsilon_1}\subseteq V_{\epsilon_2} \subseteq V_{\epsilon_3} \subseteq V_{\epsilon_4} \subseteq ...$$
  
-We transform our filtration of Vietoris-Rips complexes to persistent module, where each Vietrois-Rips complex is converted to an algebraic group, homology. This is because homology can detect holes and other topological structure in our simplicial complex. We say that we apply a 1-homology, $H_1$ to each simplicial complex in our filtration. We get a sequence of homologies with homomorphisms induced by the inclusion map.
-
-$$ H_1(S_1) \rightarrow H_1(S_2) \rightarrow H_1(S_3) \rightarrow H_1(S_4) \rightarrow ...$$.
-
-Let $S$ be our simplicial complex. We will first construct the elements that define the homology on S.
+For each $V_{\epsilon}$, we convert it to an algebraic vector space to allow us to detect holes and other topological features in our simplicial complex. We say we apply a homology on $V_{\epsilon}$. We will define the building blocks prior to defining the homology on a simplicial complex.
 
 \begin{defn}
-The group of $k$-Chain of $S$ is an abelian group of elements consisting of 
+The group of \textbf{$k$-Chain} of $S$ is an abelian group of elements consisting of 
 $$\sum z_i s_i $$ where $z_i \in \mathbb{Z}$ and $s_i$ is a $k$-simplex of S.
-We call this group $C_k$
+$C_k$ is also a vector space.
 \end{defn}
 
 \begin{defn}
-The boundary operator $\partial_k : C_k \rightarrow C_{k-1}$ is a homeomorphism where
-$$\partial (\sigma) := $$ %TODO df%
-$$\partial_1 (ab) := b-a$$
-$$\partial_2 (abc) := ab+bc-ac$$
+The \textbf{boundary operator} $\partial_k : C_k \rightarrow C_{k-1}$ is a homeomorphism defined as
+$$\partial ([v_1,v_2,...,v_k]) := \sum_{i=0}^{k} (-1)^i [v_1,...,\hat{v_i}, ...,v_k]$$
+where $[v_1,...,\hat{v_i}, ...,v_k]$ is a simplex of all elements $v_1$ to $v_k$ except $v_i$.\\
+Since we are working with points in $\mathbb{R}^3$, we define the boundary operators that we will use.
+$$\partial_1 ([ab]) := b-a$$
+$$\partial_2 ([abc]) := ab-ac+bc$$
 \end{defn}
 
+\begin{lem}
+$\partial_i \circ \partial_{i+1} = 0 $.\\
+In other words, the composition of two subsequent boundary functions is zero.\\
+\end{lem}
+
+The above lemma implies that $Im \partial_j+1 \subset Ker \partial _j$. Since every subgroup of a normal subgroup is normal and $Ker \partial _j$ is a normal subgroup, we can form the quotient group $\dfrac{Ker \partial _j}{Im \partial_{j+1}}$.
+
+
 \begin{defn}
-Given a simplicial complex, $S$, it's j-homology is the algebraic quotient group, $\dfrac{Z_j}{B_j}$.
-We define $Z_j = Ker \partial _j$ and $B_j = Im \partial_j$.
-We denote the j-homology of $S$ as $H_j(S)$
-We note that the homology is a vector space over $\mathbb{Z}$
+Given a simplicial complex, $S$, it's \textbf{j-homology} is the algebraic quotient group, $\dfrac{Ker \partial _j}{Im \partial_{j+1}}$,\\
+with the boundary functions are defined on the chain of $S$\\
+We denote the j-homology of $S$ as $H_j(S)$\\
+We note that the homology is a vector space since $Z_j \subset C_j$ was a vector space.
 \end{defn}
+
+We note that the Homology of $S$ is nonzero if $Ker \partial _j \neq Im \partial_{j+1}$. For $H_1$ this means $H_1(S)$ is nonzero if any linear combination of boundaries of triangular simplices in $S$ is not equal to the hole formed by the edges in $S$. In an example with 6 points (Fig.\ref{homHex}), we see that the $H_1$ of the simplex is nonzero because the hole created by the edges $abcd$ is not the linear combinations of the 2 triangular simplices' boundaries, $ebf$ and $dhg$.
+
+The dimension of the homology of a simplicial complex tells us how many holes there are in the simplicial complex.
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{img/hom/homologyHex}
+    \caption{The homology of this simplicial complex consisting of 6 points is not zero because the hole (blue) created by the $abcd$ edges in the simplex is not equal to the linear combinations of the 2 triangular simplices'  boundaries (red) }
+    \label{homHex}
+\end{figure}
+
+So far, we can look at the homology of each $V_{\epsilon}$ individually and can tell how many holes are in each simplicial complex. However, homology does not tell use what the holes are. We now move towards trying to utilize the information from homology for all the  $V_{\epsilon}$s.
+
+For each $V_{\epsilon}$ in our filtration, we apply a homology. For our research, we apply a 1-homology, $H_1$, to each of the $V_{\epsilon}$s. The inclusion maps between the subsequent homologies induce a sequence of homomorphisms. This sequence for a given filtration is called the persistence module.
+ 
+ $$ H_1(V_{\epsilon_1}) \rightarrow H_1(V_{\epsilon_2}) \rightarrow H_1(V_{\epsilon_3}) \rightarrow H_1(V_{\epsilon_4}) ...$$
  
 \begin{defn}
-The persistent homology module is a direct sum of the 
+Given a filtration of simplicial complexes, $S_1 \subseteq S_2 \subseteq S_3 \subseteq S_4 \subseteq ...$, the chain of homologies linked by the homomorphism induced by the inclusion map is called the \textbf{persistence module}, $ H_i(S_1) \rightarrow H_i(S_2) \rightarrow H_i(S_3) \rightarrow H_i(S_4) \rightarrow ...$.
 \end{defn}
-%TODO Write peristent module and structure theorem%
-%TODO Write stabilty bottleneck and weistrauss%
+ 
+From the results of the structure theorem for persistence homology theory, we can decompose the persistence module into sums of 1 dimensional intervals. In the following example, we can reduce the persistence module for the simplicial complexes 4 points into two intervals.
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{img/hom/sqfilt}
+    \label{sqfilt}
+\end{figure}
+ $ H_i(S_1) \rightarrow H_i(S_2) \rightarrow H_i(S_3) \rightarrow H_i(S_4)$\\
+ $\simeq \ \ \ \   0 \ \ \  \rightarrow \ \ \ \ \mathbb{R} \ \ \ \rightarrow \ \ \ \  \mathbb{R} \ \ \rightarrow \ \ \ \ \mathbb{R}$\\
+ $\oplus \ \ \ \ \ 0 \ \ \ \rightarrow \ \ \ \ 0 \ \ \ \rightarrow \ \ \ \  \mathbb{R} \ \ \ \rightarrow \ \ \ \ 0$\\
+ 
+ The top summand corresponds to the upper triangular hole and is non zero from $ H_i(S_2) $ to $ H_i(S_4) $ because this hole persists through $S_1$ to $S_4$. The bottom summand corresponds to the lower triangular hole and is nonzero only at $ H_i(S_3) $ since this hole is formed at $ S_3 $ and dies at $S_4$. We call summands of this form, where there is a single linked chain of $\mathbb{R}$ ,\textbf{intervals}. These intervals form the barcode that tell us the birth and the death of each hole.
+
+We briefly mention a series of theorems that guarantee that we can decompose any persistence modules into a sum of intervals as we did  in our previous example. These theorems are referred to as structure theorems of persistence homology.
+
+\begin{thm}
+A persistence module is indecomposible if and only if it is an interval.
+\end{thm}
+
+\begin{thm}
+A vector space is indecomposible if and only if it is 1 dimensional.
+\end{thm}
+
+\begin{thm}
+Any persistence module is a finite sum of indecomposible subgroups.
+\end{thm}
+
+\begin{thm}
+\textbf{(Krull-Schmidt)} The decomposition of a persistence module is written uniquely as as a sum of indecomposible subgroups. 
+\end{thm}
+
+The previous four theorems give us the following. Any persistent module can be written uniquely as a sum of intervals. The result we have now is that given any set of points, we can construct a filtration such that we get a unique barcode that gives us a structural characterization of the points. We now give a formal definition of the barcode for persistence homology on filtrations of $\epsilon$-Vietoris-Rips Complexes.
+
+\begin{defn}
+Given a persistence module $P = \oplus_{i=1}^{n} \ Interval_i$, the \textbf{barcode} of thie persistece module is 
+$$\{(birth_i,death_i) \mid 1 \leq i \leq n \}$$
+- $birth_i$ is the $\epsilon$ value of the $V_{\epsilon}$ corresponding to the first nonzero element in the chain of $Interval$\\
+- $death_i$ is the $\epsilon$ value of the $V_{\epsilon}$ corresponding to the last nonzero element in the chain of $Interval$\\
+\end{defn}
+
+Supposed we had two sets of points that were similar. They would generate very similar filtrations of simplicial complexes. We would hope that these filtrations have similar barcodes. We first define a metric on two barcodes.
+
+\begin{defn}
+Given, two barcodes $X$ \& $Y$, the \textbf{bottleneck distance}, $W_{\infty}(X,Y)$ is
+$$ W_{\infty}(X,Y) := \inf_{\phi:X \rightarrow Y} sup_{x \in X} || x - \phi(x)||_{\infty}$$
+\end{defn}
+
+The stability theorem states gives us an upper bound for the bottleneck distance between two filtrations of simplicial complexes. Thus that a small differences  between sets of points lead to small differences in the generated filtrations of simplicial complexes. This in turn leads to a small difference between the barcodes. 
+
+In addition to stability of the barcodes, we note that barcodes are translation and rotation invariant features of a point cloud. This is because the barcodes are formed from the filtrations of $\epsilon$-Vietoris-Rips complexes, which generated by the distances between the points. Since the distances between the points are translation and rotation invariant, our barcodes are also translation and rotation invariant.
+
+The stability and translation and rotation invariance of the barcodes make it an excellent feature for machine learning.
 
 \subsubsection{Computation Algorithm}
 We describe our implementation of the persistent homology, in addition to variations to the method to improve performance and collect more protein specific simplices. 
@@ -777,7 +933,7 @@ We look at column ? of the main matrix for our example. Here we see that column 
 
 We look at column ? of the main matrix for our example. Here we see that column ? forms the simplex with the edges [(),()]. We see that this simplex is born at ? and dies at ?. It doesn't persists for a long time which is indicative of it not being a significant feature of the data.
 
-\subsubsection{Persistence Homology}
+\subsubsection{Persistence Homology Example}
 
 We inspect the persistence homology of our protein 1ux8, a protein of length 118. At each point on the protein backbone, we search the radius around the point to find nearby points.
 
@@ -856,6 +1012,22 @@ The plot cropped and converted to a blurred image at a set resolution. The range
     \label{yhist}
 \end{figure}
 
+%----------------------
+\subsection{Convolutional Network Model}
+%----------------------
+
+The features from each of these subsections were fed into a a 2D-convolutional network. The architecture of the 2D-convolutional network for mapping protein structure to folds contains, in order, 32 3x3 convolutional layers, 64 3x3 convolutional layers, 2x2 max pooling, 128 dense layer, and the output layer.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{model_plot.png}
+\caption{The architecture of a 2D deep convolutional network for protein fold classification. Convolutional layers were added as part of a traditional image classification network. Dense layers were added to help the network use the discovered features in the images. A dropout layer was added to make our network learn an ensemble of different models}
+\label{model_plot}
+\end{figure}
+
+This is a relatively simple network. However, for our task of classifying quarter million of proteins, it performs exceptionally well. 
+\\
+There are a lot of benefits for a simple network performing well. First, it ensures that the model is not overfitting the data. Second, it allows for the network to train at a reasonable speed.
+
 
 % ===============================================================
 \section{Results}
@@ -886,8 +1058,14 @@ The plot cropped and converted to a blurred image at a set resolution. The range
 
 %----------------------
 \subsection{Persistent Homology}
-
 %----------------------
+
+
+% ===============================================================
+\section{Future Work}
+% ===============================================================
+
+
 
 %------------------------------------------------
 %
@@ -933,7 +1111,6 @@ The plot cropped and converted to a blurred image at a set resolution. The range
 %---------------------------------
 \pagebreak
 \pagebreak
-\section*{Test}
 \begin{thebibliography}{9}
 %APA Style
 \bibitem{persistenceImages} 
