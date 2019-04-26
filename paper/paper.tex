@@ -40,12 +40,13 @@
 %---------
 %   ARTICLE INFORMATION
 %----------------
-\title{PRO3DCNN: convolutional neural network for mapping protein structure to folds}
+\title{PRO3DCNN: convolutional neural network for mapping protein structure into folds}
 \author{Yechan Hong, Jan Segert, and Jianlin Cheng
 \and University of Missouri, Columbia}
 \date{\today}
 %END_FOLD
 \begin{document}
+\tableofcontents
 \maketitle
 
 % ====================================
@@ -246,7 +247,7 @@ We split up 70\% of the dataset for training, 15\% for validation and 15\% for t
         a. Alpha proteins & 289 & 516 & 1062 \\ \hline
         b. Beta proteins & 178 & 370 & 968 \\ \hline
         c. Alpha and Beta proteins (a/b) & 148 & 246 & 986 \\ \hline
-        d. Alpha and beta proteins (a+b) & 388 & 565 & 1338 \\ \hline
+        d. Alpha and beta proteins (a+b) & 388 & 565 & 1338 \\ \hline  \hline
         e. Multi-domain proteins (alpha and beta) & 71 & 71 & 118 \\ \hline
         \makecell[l]{f. Membrane and cell surface \\ proteins and peptides} & 60 & 119 & 173 \\ \hline
         g: Small proteins & 98 & 139 & 274 \\ \hline
@@ -260,7 +261,7 @@ We split up 70\% of the dataset for training, 15\% for validation and 15\% for t
 SCOPe 2.07 is a database of 276,231 proteins that have been organized into 7 Classes, 1232 Folds, 2026 Superfamilies, and 4919 Families. The dataset was released and updated till 2017. This dataset contains and is about 9 times larger than the SCOP 1.55 dataset.
 
 \begin{figure}
-    \includegraphics[width=\linewidth]{img/blank.png}
+    \includegraphics[width=\linewidth]{num_proteins_fold_155}
     \caption{Here is a histogram of the number of proteins per fold for SCOP 2.07. We see that each fold has much more examples than SCOP 1.55. This may allow our model to learn better.}
     \label{numproteinfold2.07}
 \end{figure}
@@ -268,7 +269,7 @@ SCOPe 2.07 is a database of 276,231 proteins that have been organized into 7 Cla
 We inspect the distribution of the proteins across the different folds. We see that there are much more proteins per fold.
 
 \begin{figure}
-    \includegraphics[width=\linewidth]{img/blank.png}
+    \includegraphics[width=\linewidth]{chainlengths155}
     \caption{Here is a histogram of the protein lengths for SCOP 2.07. We see that 90\% of the proteins have length less than 500}
     \label{chainlength2.07}
 \end{figure}
@@ -499,7 +500,8 @@ We see that the distance matrix is symmetric (Fig.\ref{uptry}) since the distanc
 \end{algorithmic}
 \end{algorithm}
 
-\begin{figure}[h]
+\begin{figure}[H]
+	\centering
     \includegraphics[width=\linewidth]{1ux8pdb.png}
     \caption{Here is the 3D shape of the  1ux8 protein's backbone chain. We see that there are notable features, alpha helices and beta sheets, that we would like to represent in our distance matrix.}
     \label{1ux8pdb}
@@ -507,9 +509,9 @@ We see that the distance matrix is symmetric (Fig.\ref{uptry}) since the distanc
 
 We inspect the topological structure of our protein '1ux8'. It is a protein of length 118. This protein has some spiral structures (alpha helix). These spiral structures sometimes lie in close promixity in parallel or anti parallel direction (beta sheet). These types of structures (secondary structures) are known in molecular biology to be important features of a protein's shape.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=.7\linewidth]{1ux8matBase}
+    \includegraphics[width=\linewidth]{1ux8matBase}
     \caption{Here is the distance matrix of the 1ux8 protein. We see a thick diagonal line with corresponds to the protein backbone chain.}
     \label{1ux8matBase}
 \end{figure}
@@ -528,7 +530,7 @@ We note thick white regions running parallel along the diagonal line of the imag
     
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.7\linewidth]{1ux8matAhelix}
+    \includegraphics[width=\linewidth]{1ux8matAhelix}
     \caption{The red squares outline the discrete thick white regions running parrallel to the diagonal line. These regions indicate that the neighbors of points in this region are in very close proximity, indicating that there may be a helix. }
     \label{1ux8matAhelix}
 \end{figure}
@@ -536,8 +538,8 @@ We note thick white regions running parallel along the diagonal line of the imag
     
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.7\linewidth]{1ux8matBetaSheets}
-    \caption{The green squares outline the lines of proximity between points on different helicies, suggesting that the helices are in close proximity. The direction of the lines indicate whether the two helices are parallel or anti-parallel.}
+    \includegraphics[width=\linewidth]{1ux8matBetaSheets}
+    \caption{The blue squares outline the lines of proximity between points on different helicies, suggesting that the helices are in close proximity. The direction of the lines indicate whether the two helices are parallel or anti-parallel.}
     \label{1ux8matBetaSheets}
 \end{figure}
 
@@ -555,7 +557,7 @@ Some proteins have a length of 600, making the distance matrix have a size of 60
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.7\linewidth]{cropMat}
+    \includegraphics[width=\linewidth]{cropMat}
     \caption{Due to computational restrictions, we crop our matrix by shifting the red crop window along the diagonal line of our matrix.}
     \label{cropMat}
 \end{figure}
@@ -588,7 +590,7 @@ Given, a protein backbone with length N, $\{P_i\}^{N}_{i=1}$, we sample every ot
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=.7\linewidth]{1ux8pdbSparseDistM}
+    \includegraphics[width=\linewidth]{1ux8pdbSparseDistM}
     \caption{Here we have a distance matrix of the sampled 1ux8 protein backbone. We do see that the protein backbone, alpha helices, and beta sheets that were observed in the full distance matrix can also be observed in the sparse distance matrix. }
     \label{1ux8pdbSparseDistM}
 \end{figure}
@@ -794,9 +796,9 @@ The stability and translation and rotation invariance of the barcodes make it an
 We describe our implementation of the persistent homology, in addition to variations to the method to improve performance and collect more protein specific simplices. 
 In practice, we will use the N points of a protein backbone in this algorithm but for illustrative purposes, we consider a simple collection of N points in the $\mathbb{R}^2$. (Fig.\ref{Collection of points}) Because we are looking at the distances between our points, the method performs exactly the same in $\mathbb{R}^3$ or with any collection of objects with a well defined metric.
 
-\begin{figure}[t]
-    \includegraphics[width=\linewidth]{img/blank.png}
-    \caption{Here is the collection of the N points we are considering in 2D. Although our protein is in 3D, the method is concerned with the distances between points, allowing in to work in a similar fashion as this example.}
+\begin{figure}
+    \includegraphics[width=\linewidth]{img/homex/points}
+    \caption{Here is the collection of the 17 points we are considering in 2D. Although our protein is in 3D, the persistence homology is concerned with the distances between points, allowing in to work for points in any dimension as long as there is a well-defined metric.}
     \label{Collection of points}
 \end{figure}
 
@@ -806,23 +808,23 @@ We call the (i,j) edge the edge constructed by connecting the ith and the jth po
 
 A distance matrix of the our points is calculated. We collect the upper triangular elements of the distance matrix to get the unique edges of our points (unique disregarding direction, making (i,j) edge equal to (j,i) edge). These edges are sorted by length.
 
-\begin{figure}[t]
-    \includegraphics[width=\linewidth]{img/blank.png}
-    \caption{Here is a distance matrix of our set of N points. We will only consider the edges in the upper triangular matrix, because the (i,j) edge represents the same line as the (j,i) edge}
+\begin{figure}
+    \includegraphics[width=\linewidth]{img/homex/distm.png}
+    \caption{Here is a distance matrix of our set of 17 points. We will only consider the edges in the upper triangular matrix, because the (i,j) edge represents the same line as the (j,i) edge}
     \label{Distance matrix of example}
 \end{figure}
 
 Consider a protein with length 300. The total number of edges for a protein of length 300 is $\sum_{n=1}^{299} n =44851$. The total number of triangular simplices formed by these edges $\binom{300}{3}=\dfrac{300!}{3!297!}=4455100$.  We see that the numbers of triangular simplices increase exponentially and very quickly, even for small structures. This demands a need to reduce the computation load.
 
-A cutoff distance is determined, where we discard the edges that are larger than this value. A similar concept exists in bioinformatics, where a point of a protein are determined to be in contact with another point if their distance is within the contact distance (3 Å). The loss of information by discarding the edges larger than this value isn't an issue since because when we start considering larger edges, we start converging towards a structure where every point is connected to each other. As long as we set the cutoff distance at an appropriate value, we would still get the cycles of the protein that represent the characteristic features. Furthermore, setting of a cutoff distance has an added advantage that it filters out uninteresting cycles that are too large. We determined the cutoff distance at 6.5 Å, because we experimentally determined that 6.5 Å is an upper bound of the distances between two alpha helices. The distance between two alpha helices are less than 6.5  Å, we  consider the edges that link two alpha helices together, allowing use to extract features related to the beta sheets. Furthermore, the most sequential distances between the backbone points, $P_i and P_{i+1}$, and the distances within the alpha helices are both less than 6.5, allowing use to extract features related to them as well. It is also know that due to   tetrahedral chemical bonding at the carbon backbone atom due to the pleated appearance of beta-strand causes the distance between beta sheets to be approximately 6 Å \cite{fastSCOP}.
+A cutoff distance is determined, where we discard the edges that are larger than this value. A similar concept exists in bioinformatics, where a point of a protein are determined to be in contact with another point if their distance is within the contact distance (3 Å). The loss of information by discarding the edges larger than this value isn't an issue since because when we start considering larger edges, we start converging towards a structure where every point is connected to each other. As long as we set the cutoff distance at an appropriate value, we would still get the cycles of the protein that represent the characteristic features. Furthermore, setting of a cutoff distance has an added advantage that it filters out uninteresting cycles that are too large. We experimentally determined the cutoff distance at 6.5 Å, because 6 Å is the approximate distances between two alpha helices in a beta sheet \cite{fastSCOP}. The distance between two alpha helices are less than 6.5  Å, we  consider the edges that link two alpha helices together, allowing use to extract features related to the beta sheets. Furthermore, the most sequential distances between the backbone points, $P_i and P_{i+1}$, and the distances within the alpha helices are both less than 6.5, allowing use to extract features related to them as well. It is also know that due to   tetrahedral chemical bonding at the carbon backbone atom due to the pleated appearance of beta-strand causes the distance between beta sheets to be approximately 6 Å \cite{fastSCOP}.
 
-For our set of N points, the cutoff distance is determined as $\dfrac{1}{6}$ of the longest length, which is ?. Below are the collection of points 
+For our set of 17 points, the cutoff distance is determined as $\dfrac{1}{6}$ of the longest length, which is around 2. Below are the collection of points 
 
-\begin{figure}[t]
-    \includegraphics[width=\linewidth]{img/blank.png}
-    \caption{Here we see the effect of the cutoff distance on the triangular simplicies we form. When a cutoff distance is not set, all the edges are considered, forming triangular simplicies where every point is connected to each other. These simplices don't convey too much about the structure of our protein. When a cutoff distance is set properly, the important distances considered, making the simplices less convoluted and increasing computation time.}
+\begin{figure*}
+    \includegraphics[width=\linewidth]{img/homex/cutoff.png}
+    \caption{Here we see the effect of the cutoff distance on the triangular simplicies we form. When a cutoff distance is not set ($\epsilon=\infty$), all the edges are considered, forming triangular simplicies where every point is connected to each other. These simplices don't convey too much about the structure of our protein. When a cutoff distance is set properly ($\epsilon=2$), the important distances considered, making the simplices less convoluted and increasing computation time.}
     \label{Effect of cutoff}
-\end{figure}
+\end{figure*}
 
 Once we have the edges that we are considering, we find the triangular simplicies formed by our edges. As we loop over the edges, we index the edges from 1 to N based on the endpoints of the edge (For an edge (2,4),   it is indexed as 2 and 4). Then, we check if each edge forms a triangular simplicies by looking at the indexed edges related to our edge. (For an edge (2,4), we look at the edges that have been index as 2 or 4 to see if we formed a 2-simplex). Because we are forming the triangular simplicies as we add increasing edges, triangular simplicies are ordered by when they are created. 
 
@@ -840,20 +842,13 @@ Once we have the edges that we are considering, we find the triangular simplicie
 
 Given a triangular simplex, we can compute when it was born by looking at it's edges. For example, a triangular simplex (1,2,3) has the edges (1,2), (1,3), and (3,1). Suppose the lengths of these edges were 3,5, and 7 respectively. Then the triangular simplex was formed at radius 7. 
 
-\begin{figure}[t]
-    \includegraphics[width=\linewidth]{img/blank.png}
+\begin{figure*}
+    \includegraphics[width=\linewidth]{img/homex/ripcomplex.png}
     \caption{The triangular simplices are discovered as we add edges. Because we are adding the edges in increasing order, the triangular simplices are discovered in the order of their birth.}
     \label{Simplex formation algorithm}
-\end{figure}
+\end{figure*}
 
 From the edges and triangular simplices, we create two matrices, D1 and D2. Let M be the number of edges we are considering and L be the number of triangular simplices we are considering.
-
-\begin{figure}[t]
-    \includegraphics[width=\linewidth]{img/blank.png}
-    \caption{Here is a D2 matrix for the protein 1ux8. We notice that most of the matrix consists of zero elements. }
-    \label{D2Mat}
-\end{figure}
-
 
 D1 is a  NxM matrix where the rows correspond to the backbone points and the columns corresponds to the edge in increasing order. We fill in D1 in the following order. For the hth  edge with endpoints (i,j), we set $D1_{h,i} = -1$ and $D1_{h,j} = 1$. Suppose an edge (2,4) is the 10th smallest edge. The corresponding entries in would be $D1_{10,2}=-1$ and $D1_{10,4}=1$.
 
@@ -913,70 +908,112 @@ Finally, we can construct the main matrix that gives us the persistence homology
 \end{algorithmic}
 \end{algorithm}
 
-\begin{figure}[t]
-    \includegraphics[width=\linewidth]{img/blank.png}
+\begin{figure*}
+    \includegraphics[width=\linewidth]{img/homex/matProcess.png}
     \caption{Here we have a diagram of the matrices that we have constructed and manipulated. The final product, the main matrix, is a MxH matrix where M is the number of edges we have considered and H is the simplex with persistent homology.}
     \label{MatricesOfComputeHom}
-\end{figure}
+\end{figure*}
 
 The columns in the main matrix which come from B correspond to the simplices which get created and filled in before our cutoff distance. The columns in the main matrix which come from Z correspond to the simplices that get created but not filled in before our cutoff distance.
 
-\begin{figure}[t]
-    \includegraphics[width=\linewidth]{img/blank.png}
-    \caption{Here we see the main matrix of persistent homology for protein 1ux8. Each column represents a simplex that represents a significant feature of our protein.}
-    \label{1ux8MainMatrix}
-\end{figure}
-
 From each column,we extract information about the edges that form the simplex and it's birth and death from the column in the following manner. For each column, the simplex is formed by the edges in the non-zero entries in the rows. The simplex is born when the edge corresponding to the last non-zero row is added. If our column comes from B, let d be the column of R2 that our column comes from. Then, the simplex is destroyed/filled in when the dth simplex is formed. If the column comes from Z, then the simplex is not destroyed within our cutoff distance. We notate this by denoting the death as $\infty$. We say that the simplex persists for $death - birth$.
 
-We look at column ? of the main matrix for our example. Here we see that column ? forms the simplex with the edges [(),()]. We see that this simplex is born at ? and dies at ?. It doesn't persists for a long time which is indicative of it not being a significant feature of the data.
+We look at a column of the main matrix which for our example with 17 points.The column is all zero except at rows 13,45,46,50 where it takes the values 1,1,-1,1 respectively, The indices of the non zero the rows correspond the indices of the edges that belong to the hole/cycle. The values 1 and -1 correspond to the orientation of the edge. The longest edge of the hole tells us when the hole was formed. The death of the simplex occurs when the longest edge of the simplexes which fill in our hole is created. This hole/cycle corresponds to the smallest hole found in our data (Fig.\ref{homHoles}). This hole does not persist for a long time, indicating that it is not a significant feature in our data.
 
-We look at column ? of the main matrix for our example. Here we see that column ? forms the simplex with the edges [(),()]. We see that this simplex is born at ? and dies at ?. It doesn't persists for a long time which is indicative of it not being a significant feature of the data.
+We look at another column of the main matrix for our example with 17 points.The column is all zero except at rows 8,9,10,11,13,14,20,22,25,27,31 where it takes the values 1,1,1,-1,-1,1,1,1,-1,-1 respectively. This hole/cycle corresponds to the largest hole found in our data with 11 points (Fig.\ref{homHoles}). This hole persists for a long time, indicating that it is a significant feature in our data.
+
+\begin{figure*}[t]
+	\centering
+    \includegraphics[width=\linewidth]{img/homex/homHoles}
+    \caption{Here we have the 3 holes generated for our example with 17 points. These holes are representative of the features in the data. We see that the first two holes do not persist for a long time, making them less significant feature of the data than the last hole, which persists for a long time.}
+    \label{homHoles}
+\end{figure*}
+\pagebreak
 
 \subsubsection{Persistence Homology Example}
 
-We inspect the persistence homology of our protein 1ux8, a protein of length 118. At each point on the protein backbone, we search the radius around the point to find nearby points.
+We introduced the theory behind persistence homology and the algorithm to compute it for a set of points. Now we apply persistence homology to our data set. We will first generate the barcode for a protein 1ux8 and see if the backbone chain, alpha helices, and betasheets are represented in the barcodes. We will also compare the features generated by persistence homology and the distance matrix.
 
-\begin{figure}
+We inspect holes generated by persistence homology of our protein 1ux8, a protein of length 118. At each point on the protein backbone, we search an $\epsilon$-radius around the point to connect edges of increasing length to form the $\epsilon$-Vietoris-Rips complexes. Below are a series of $\epsilon$-Vietoris-Rips complexes.
+
+\begin{figure}[H]
     \includegraphics[width=\linewidth]{img/hom/ballRad1.png}
-    \caption{A search is done near each point at increasing radii to find the nearby points }
+    \caption{$\epsilon = 1$ A search is done at each point at increasing radii to connect the nearby points }
     \label{ballRad1}
 \end{figure}
-The red edges indicate that the two points are less than 3.5 distance away. Making them connected.
-As we increase the radius, we connect more and more points.
-\begin{figure}
+
+
+\begin{figure}[H]
     \includegraphics[width=\linewidth]{img/hom/ballRad2.png}
-    \caption{Edges between points are formed as the search radii become larger}
+    \caption{$\epsilon = 3.5$ The red edges indicate that the two points are less than 3.5 distance away,making them connected. As we increase the $\epsilon$, we connect more and more points, forming more simplexes.}
     \label{ballRad2}
 \end{figure}
 
-The connections between these points form polygons (simplexes).
-\begin{figure}
+\begin{figure}[H]
     \includegraphics[width=\linewidth]{img/hom/ballRad3.png}
-    \caption{The structure of the protein is detected as we increase the radii at around 6 Ångströms}
+    \caption{The general structure of the protein is detected as we increase when $\epsilon$ is around 6 Å}
     \label{ballRad3}
 \end{figure}
-After a certain point we want to cut off our search radius because we have extracted all the notable features from our structure. If we keep increasing the search radius then all the points will be connected to each other.
 
-A polygon is filled in when the inner polygons of the larger polygons are filled in. We note that triangles are filled as soon as they are formed but larger structures take more time to get filled in.
-Persistent homology tells us when (the radius) at which these polygons are created and filled in.
+After a certain point we want to cut off our search radius because we have extracted all the notable features from our structure. If we keep increasing the search radius then all the points will be connected to each other, revealing not much about the structure of our protein. We set the cutoff distance at 6.5 Å.
 
-Below we have two examples of the polygons.
-\begin{figure}
+\begin{figure}[H]
     \includegraphics[width=\linewidth]{img/hom/Simplex1.png}
-    \caption{Persistent Homology detecting a small cycle }
+    \caption{Persistent Homology detecting a small cycle. This small hole doesn't seem indicative of any important feature of our protein. }
     \label{Simplex1}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
     \includegraphics[width=\linewidth]{img/hom/Simplex2.png}
-    \caption{Persistent homology detecting an alpha helix}
+    \caption{Persistent homology detecting an alpha helix. The hole is a significant feature of our data since the hole persists for a long time.}
     \label{Simplex2}
 \end{figure}
 
-\subsubsection{ Sparse Persistence Homology}
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{img/hom/Simplex3.png}
+    \caption{Persistent homology detecting a beta sheet. This hole is a significant feature of our data since the hole persists for a long time.}
+    \label{Simplex3}
+\end{figure}
+
+We inspect some key holes generated by the persistent homology to see if it captures the  features of our data well. We see that persistent homology is able to detect the presence of alpha helices (Fig.\ref{Simplex2}) and beta sheets (Fig.\ref{Simplex3}). The persistent homology is on par with the distance matrix because it can represent alpha helices and beta sheets. However, the information of the birth and the death of the holes alone aren't enough to describe relationships between multiple pairs of alpha helices.
+
+\subsubsection{ Sparse Matrix}
+
+A series of matrices were used during the computation of the persistence homology. We note that in D1, D2, R1, R2, V1, V2, B, Z, Main matrices we see that the most of the matrix consists of zero elements (Fig.\ref{1ux8MainMatrix}). An performance evaluation of the homology algorithm showed that a lot of time was spent on manipulating the matrix object which was implemented in numpy. This is because most matrices have dimensions which are well over 1000x1000.
+
+
+\begin{figure*}
+	\centering
+    \includegraphics[width=\linewidth]{img/homex/main.png}
+    \caption{Here we see the main matrix of persistent homology for our collection of 17 points. We note that most of the matrix consists of zero elements}
+    \label{1ux8MainMatrix}
+\end{figure*}
+
+A sparse matrix was implemented so that we do not keep track of the zero values. For a NxM matrix, a list of length M holds dictionaries whose keys range over the row numbers less than or equal to N and whose values are the values of the nonzero elements. For a matrix given in (Fig.\ref{spmat}), the corresponding sparse matrix would be (Fig.\ref{sparseImpl}).
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{img/sparseM/sparseMat}
+    \caption{Here is small matrix where most of the matrix consists of zeroes. We will implement this into a sparse matrix to improve the computation time of the persistence algorithm.}
+    \label{spmat}
+\end{figure}
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{img/sparseM/sparseMat}
+    \caption{Here is the implementation of the matrix with zeroes as a sparse matrix. Although the computational benefits of using the sparse matrix over a regular matrix isn't huge for small matrices, the matrices used in persistent homology much larger than 1000x1000}
+    \label{sparseImpl}
+\end{figure}
+
+When we add a new value at the (i,j) coordiantes of the sparse matrix, we update our matrix using the jth column dictionary and the i key. Whenever an operation is performed that can change the ij th value of a matrix to zero, i key is removed from the jth column dictionary.
+
+Implementing these changes to the matrix made the computation speed of the persistent homology for SCOP 1.55 10 times faster.
 
 \subsubsection{ Backbone Aware Persistence Homology}
+
+The computation of persistent homologies for $\dfrac{1}{10}$ of SCOP 1.55, took around 15 hours. Upon inspect of the computation times, we noted that proteins that took longer than 50 seconds to compute the persistence homology accounted for about 11 hours of the 15 hours. 
+
+The reason why persistent homology had a difficult time was due to a improperly set cutoff value. Initially we set the cutoff value as the maximum length of the edges found in the protein backbone. This was because we wanted to include the edges of the protein backbone as part of the filtration of $\epsilon$ Vietoris-Rips simplicial complexes because it is a very important feature of the protein. However, some of the proteins had very long edges in the protein backbone chain, making the cutoff value very large and making our algorithm compute the persistent homology for all the edges in our protein. When we adjusted the cutoff value to be just around 6 Å we noticed that beta helices along the protein were not being captured very well by the holes.
+
+To remedy this issue, we multiply a weight of $.25$ on the edges belonging to the protein backbone. This would ensure that protein backbone edges that reasonably small would get included as part of the filtration of $\epsilon$ Vietoris-Rips simplicial complexes. Placing this modification greatly sped up the speed of the computation of persistent homologies, computing $\dfrac{1}{10}$ of SCOP 1.55 from 15 hours to 2.6 seconds.
 
 \subsubsection{ Persistence Images}
 
@@ -986,84 +1023,69 @@ Below we have two examples of the polygons.
     \label{persistenceimages}
 \end{figure}
 
-The persistent homology of each protein is converted into an input feature called persistent images. For each simplex in the homology, we plot it on a 2-dimensional vector space with the x coordinate being the birth and the y coordinate being the persistence of the simplex. For the simplices that persist infinitely, we plot the y coordinates well above the maximum persistence.
-
-This representation captures the essential information about each simplex as well as ordering them. The more persistent simplices are higher and the simplices that are born later appear towards the right.  Fig.\ref{persistencePlot} shows this plot for the protein 1ux8.
-
-\begin{figure}
-    \includegraphics[width=\linewidth]{img/blank.png}
-    \caption{Here is the plot of the simplices for the protein 1ux8. The x axis is the birth of the simplex and the y axis is the persistence of the simplex. At the very top we plot the simplices with infinite persistence.}
-    \label{persistencePlot}
-\end{figure}
-
-Because it is difficult to send these pairs of points to a neural network, we take a blurred resolution of the image which is constructed as follows. First, a fixed dimensions of the blurred images is determined. Then, an interval for the x values and y values are determined experimentally by considering the intervals that contain our data. 
-
-The plot cropped and converted to a blurred image at a set resolution. The range of the first and second coordinates to crop the plot were derived from the distribution of the data.
+The persistent homology of each protein is converted into an input feature called persistent images (Fig.\ref{persistenceimages}). For each bar in the barcode, we plot it on a 2-dimensional vector space with the x coordinate being the birth and the y coordinate being the persistence of the hole. For the simplices that persist infinitely, we plot the y coordinates well above the maximum value for persistence. After the plot is constructed, a 2D histogram is created of the data. The resolution of the histogram is 100x100 and the x interval and the y interval have been selected by looking at the x and y values of the plots for all proteins (Fig.\ref{xhist}) \& Fig.\ref{yhist})
 
 \begin{figure}
     \includegraphics[width=\linewidth]{xhist.png}
-    \caption{x range}
+    \caption{We inspect the x values, birth values, of barcodes of all the proteins prior to selecting an x interval for the 2D histogram.}
     \label{xhist}
 \end{figure}
-
 \begin{figure}
     \includegraphics[width=\linewidth]{yhist.png}
-    \caption{y range}
+    \caption{We inspect the y values, persistent values, of the barcodes of all the proteins prior to selecting an y interval for the 2D histogram.}
     \label{yhist}
 \end{figure}
 
-%----------------------
+This representation captures the essential information about each simplex as well as ordering them. The more persistent simplices are higher and the simplices that are born later appear towards the right.  Fig.\ref{bcodeImg} shows this plot for the protein 1ux8.
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{img/barcode2}
+    \caption{Here is the plot of the persistence homology for the protein 1ux8. The x axis is the birth of the hole and the y axis is the persistence of the hole. At the very top we plot the simplices with infinite persistence.}
+    \label{bcodeImg}
+\end{figure}
+----------------------
 \subsection{Convolutional Network Model}
 %----------------------
 
 The features from each of these subsections were fed into a a 2D-convolutional network. The architecture of the 2D-convolutional network for mapping protein structure to folds contains, in order, 32 3x3 convolutional layers, 64 3x3 convolutional layers, 2x2 max pooling, 128 dense layer, and the output layer.
 
 \begin{figure}
-\includegraphics[width=\linewidth]{model_plot.png}
+\includegraphics[width=.9\linewidth]{model_plot.png}
 \caption{The architecture of a 2D deep convolutional network for protein fold classification. Convolutional layers were added as part of a traditional image classification network. Dense layers were added to help the network use the discovered features in the images. A dropout layer was added to make our network learn an ensemble of different models}
 \label{model_plot}
 \end{figure}
 
-This is a relatively simple network. However, for our task of classifying quarter million of proteins, it performs exceptionally well. 
-\\
-There are a lot of benefits for a simple network performing well. First, it ensures that the model is not overfitting the data. Second, it allows for the network to train at a reasonable speed.
+This is a relatively simple network. However, for our task of classifying quarter million of proteins, it performs exceptionally well. There are a lot of benefits for a simple network performing well. First, it ensures that the model is not overfitting the data. Second, it allows for the network to train at a reasonable speed.
+
+We outline the hyper-parameters that were used for traing our convolutional neural network. For all of the training, a batch size of 50 was used. Stochastic gradient descent with a learning rate of $.01$ was used. The labels of the protein folds were one hot encoded as a vector of size 605 for SCOP 1.55 and 1232 for SCOPe 2.07. For SCOP 1.55 the models were trained for 20 epochs. SCOPe 2.07, the models were trained for 30 epochs.
 
 
 % ===============================================================
 \section{Results}
 % ===============================================================
 
-%----------------------
-\subsection{Distance Matrix}
-%----------------------
+Overall, the distance matrix out performs persistent homology as an input feature on both SCOP 1.55 and SCOPe 2.07. On SCOP 1.55 the distance matrix has an accuracy of 86\% and the persistence homology has an accuracy of 62\%. On SCOPe 2.07, the distance matrix has an accuracy of 90\% and the persistence homology has an accuracy of 54\%. 
 
-\subsubsection{Cropped Distance Matrix}
-    The distance matrix as the input feature worked pretty well for classifying the data. The best method, subsampling every other point with a window size of 50x50 gives an accuracy of 96\%
-    
-    The other two methods perform pretty well, at around 86\%.
-    The subsampling method probably works best because it gives the neural network model to view the long range dependencies.
-    The smaller window size of 50x50 performs much better than the 100x100 window for the subsampling methods.  
-    
-    \begin{figure}[t]
-      \includegraphics[width=\linewidth]{AccSparsevsNonSparse.png}
-      \caption{}
-      \label{AccSparsevsNonSparse}
-    \end{figure}
-    
-    \begin{figure}[t]
-      \includegraphics[width=\linewidth]{ValAccSparsevsNonsparse.png}
-      \caption{}
-      \label{ValAccSparsevsNonsparse}
-    \end{figure}
+The distance matrix performs a lot better than the persistence homology because the distance matrix conveys spatial relationship between the alpha helices and beta sheets while the persistence images do not. The specifically, persistence homology would have trouble distinguishing between proteins of Alpha/Beta and Alpha+Beta classes since these proteins are both composed of alpha helices and beta sheets but their spatial orientations are different. 
 
-%----------------------
-\subsection{Persistent Homology}
-%----------------------
+We note that the distance matrix performs better on SCOPe 2.07 than SCOP 1.55. This is likely due to the increase in the amount of training data per fold. The number of classification labels increased 2 fold but the amount of data increased 8 fold between SCOP 1.55 and SCOPe 2.07. 
 
+Finally, the persistence homology performs worse in SCOPe 2.07 than SCOP 1.55. Although there are more training data per fold in SCOPe 2.07, there are more proteins that which require more information about the spatial orientation of beta sheets and alpha helices were added in SCOPe 2.07. This makes it more difficult for persistence homology to be accurate.
 
-% ===============================================================
-\section{Future Work}
-% ===============================================================
+We found that the sparse distance matrix and the regular distance matrix perform similarly. The sparse distance matrix does take more epochs for it to reach the similar level of accuracy as the regular distance matrix.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{| l | l | l |}
+        \hline 
+        Method & SCOP 1.55 & SCOPe 2.07  \\ \hline
+        \textbf{\makecell{Distance\\ Matrix}} & 86\% & 90\%  \\ \hline
+        \textbf{\makecell{Persistence\\ Homology}} & 62\% & 54\%  \\ \hline
+    \end{tabular}
+    \caption{ }
+    \label{}
+\end{table}
+
 
 
 
