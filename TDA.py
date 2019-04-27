@@ -2,8 +2,8 @@ import pickle as pick
 import operator
 import numpy as np
 import math
-import sys
 import time
+import sys
 from sparseM import sparseM
 from MAT import getDistM
 
@@ -31,6 +31,7 @@ def getEdgesFromSparseCol(col, Edges):
     return EC
 
 def printMat(M):
+    M = M.astype(int)
     for r in range(M.shape[0]):
         print(M[r,:].tolist())
 
@@ -49,7 +50,6 @@ def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo, encoding='bytes')
     return dict
-
 
 def sparseMReduce(M,I):
     columnAtPivot = [None] * M.r
@@ -78,6 +78,20 @@ def sparseMReduce(M,I):
                 I.addMultColtoCol(c1=i,m=multFactor,c2=j)
 
     return M,I
+
+def getEdgesLengthLessThan(distM,dist):
+    edges = []
+    l = distM.shape[0]
+    triu_indices = np.tril_indices(l, 1)
+    I, J = triu_indices[0], triu_indices[1]
+    for k in range(len(I)):
+        i = I[k]
+        j = J[k]
+        d = distM[i][j]
+        if (d<dist):
+            edges.append((i,j))
+    return edges
+
 
 
 #Returns list of barcodes [V,(birth,death)]
@@ -122,19 +136,16 @@ def genHom(distM,useNewHomGen):
                     if(d>maxLen):
                         maxLen = d
 
-    info.append(('L:',l))
-    # ===============================================================
-    # Find dist array
-    # ===============================================================
+    info.append(('L:', l))
+
+    # Find dist array -------------------------------
+
 
     dArr.sort(key=operator.itemgetter(1))
     chainSeg.sort(key=operator.itemgetter(1))
     t0 = time.time()
 
-    # ===============================================================
     # Cut off :TODO Alternative is to do nothing if simplices is empty since not interesting simplices will form
-    # ===============================================================
-    # for subRad in range(3):
 
     #TODO: OPTION 1 Use FIXED DIAMETER DEPENDING ON SIZE
     # diameter = maxLen/6
@@ -142,16 +153,17 @@ def genHom(distM,useNewHomGen):
     # diameter = sumChainLen/l*1.3
     #TODO: OPTION 3 USE Fixed
     diameter = 6.5
+    # diameter = 2
 
 
     # print(diameter)
 
     # print('maxLen: '+str(maxLenRad/(3))+'  seqDist: '+str(maxSeqDist))
-    if(useNewHomGen):
+    if useNewHomGen:
         cutOffIndex = 0
         for i,p in enumerate(dArr):
             cutOffIndex=i
-            if p[1] > diameter:#maxLenRad/(3-subRad):
+            if p[1] > diameter:  # maxLenRad/(3-subRad):
                 break
 
         tempdArr = dArr[:cutOffIndex]
@@ -167,7 +179,7 @@ def genHom(distM,useNewHomGen):
         cutOffIndex = 0
         for i,p in enumerate(dArr):
             cutOffIndex=i
-            if p[1] > diameter:#maxLenRad/(3-subRad):
+            if p[1] > diameter:  # maxLenRad/(3-subRad):
                 break
 
         tempdArr = dArr[:cutOffIndex]
@@ -179,21 +191,21 @@ def genHom(distM,useNewHomGen):
         Edges = []
         Dist = []
         for i,p in enumerate(tempdArr):
-            ebrth[p[0]]=i
+            ebrth[p[0]] = i
             Edges.append(p[0])
             Dist.append(p[1])
-    # =================
-    # Find Simplices
-    # =================
+
+    # Find Simplices -------------------------------
+    # ebrth is the index of the edge along the Edge list
     l = len(tempdArr)
     n = distM.shape[0]
     S = []
-    SBirth = []
-    RE = [[] for i in range(n)] # Related Edges
+    SBirth = [] #Sbirth is the index of the edge at which the simplex is formed
+    RE = [[] for i in range(n)]  # Related Edges
     for i,x in enumerate(tempdArr):
-        e = x[0] #edge
+        e = x[0]  # edge
 
-        #Calcuate Simplexes Formed (For each Related Edge, add one at third point the edge it is connected to)
+        # Calculate Simplexes Formed (For each Related Edge, add one at third point the edge it is connected to)
         D = [0]*n
         for r in RE[e[0]]:
             if (r[0]==e[0]) or (r[0]==e[1]):
@@ -206,6 +218,7 @@ def genHom(distM,useNewHomGen):
                     e1 = sortedTupleFromList([e[0],j])
                     e2 =  sortedTupleFromList([e[1],j])
                     SBirth.append(max([ebrth[e],ebrth[e1],ebrth[e2]]))
+
 
             else:
                 D[r[0]] += 1
@@ -247,6 +260,13 @@ def genHom(distM,useNewHomGen):
         return [],info
     dArr = tempdArr
 
+    # for e in dArr:
+    #     print(e[0])
+    # for s in S:
+    #     print(s)
+    print(len(dArr))
+    print(len(S))
+
 
     t1 = time.time()
     info.append(("Edgs:",len(dArr)))
@@ -256,9 +276,9 @@ def genHom(distM,useNewHomGen):
 
 
     t0 = time.time()
-    # =================
-    # Construct D1
-    # =================
+
+    # Construct D1 -------------------------------
+
     r = distM.shape[0]
     c = len(dArr)
     D1 = sparseM(r,c)
@@ -270,31 +290,30 @@ def genHom(distM,useNewHomGen):
         e = x[0] #Edge Pair
         D1.set(e[0],i,-1)
         D1.set(e[1],i, 1)
-    # TODO : Stack and implement mat until
-
 
     # Reduce D1
     # D1 = np.vstack((D1,I))
+    # print('D1')
+    # print(D1.nparray())
     R1,V1 = sparseMReduce(D1,I)
 
     t1 = time.time()
     info.append(('D1:',round(t1-t0,5)))
-    # print('R1')
     # isReduced(R1)
-    # printMat(R1)
-    # print(R1)
+    # print('R1')
+    # printMat(R1.nparray())
     # print('V1')
-    # print(V1)
-    # printMat(V1)
+    # printMat(V1.nparray())
 
 
     t0 = time.time()
-    # =================
-    # Construct D2
-    # =================
+
+    # Construct D2 -------------------------------
+
     r = len(dArr)
     c = len(S)
-
+    print(r)
+    print(c)
     EDict = {}
     for i,x in enumerate(dArr):
         e = x[0]
@@ -302,8 +321,8 @@ def genHom(distM,useNewHomGen):
 
     D2 = sparseM(r,c)
     I = sparseM.I(c)
-    # print("Simplexes")
-    # print(S)
+    print("Simplexes")
+    print(S)
     for i,s in enumerate(S):
         e1 = (s[0],s[1])
         e2 = (s[1],s[2])
@@ -313,6 +332,8 @@ def genHom(distM,useNewHomGen):
         D2.set(EDict[e3],i,-1)
 
     # Reduce D2
+    # print('D2')
+    # printMat(D2.nparray())
     
     R2,V2 = sparseMReduce(D2,I)
 
@@ -320,21 +341,21 @@ def genHom(distM,useNewHomGen):
     info.append(('D2',round(t1-t0,5)))
 
     # print('R2')
-    # printMat(R2)
+    # printMat(R2.nparray())
     # isReduced(R2)
     # print(R2)
     # print('V2')
-    # printMat(V2)
+    # printMat(V2.nparray())
     # print(V2)
     Barcodes = []
 
     t0 = time.time()
-    # ====================
-    # Construct B from nonzero cols in R2 (Finite Barcode)
-    # ====================
+
+    # Construct B from nonzero cols in R2 (Finite Barcode) -------------------------------
 
     B = []
-
+    #birth is the index of the pivot, the longest edge added to form the simplex.
+    #Death is index of the of the last edge added to the ith 2-simplex where i is the column's column number in R2 (which coincides with simplexes)
     for i in R2.nonZeroCols:
         birth = R2.getPivot(i)
         death = SBirth[i]
@@ -350,9 +371,8 @@ def genHom(distM,useNewHomGen):
     info.append(('B',round(t1-t0,5)))
 
     t0 = time.time()
-    # ====================
-    # Construct Z from V1 cols correspond to zero col in R1 (Infinite Barcode)
-    # ====================
+
+    # Construct Z from V1 cols correspond to zero col in R1 (Infinite Barcode) -------------------------------
 
     Z = []
 
@@ -364,9 +384,7 @@ def genHom(distM,useNewHomGen):
     t1 = time.time()
     info.append(('Z',round(t1-t0,5)))
 
-    # ====================
-    # Construct Main Obj
-    # ====================
+    # Construct Main Obj -------------------------------
 
     t0 = time.time()
 
@@ -392,8 +410,12 @@ def genHom(distM,useNewHomGen):
             Barcodes.append([E,(Dist[birthIndex],death)])
 
     # print("Main Object")
-    # print(np.transpose(np.array(Main)))
-    
+    # print(Main)
+    # print(Barcodes)
+    # mainNP = sparseM(len(Edges),len(Main))
+    # mainNP.cols = Main
+    # print(mainNP.nparray())
+    # printMat(np.transpose(np.array(Main)))
     t1 = time.time()
     info.append(('Main',round(t1-t0,5)))
     info = [("nbcodes:",len(Barcodes))] + info
@@ -401,31 +423,66 @@ def genHom(distM,useNewHomGen):
     return Barcodes,info
     # pickle(barcode,'barcode')
 
-def genHoms(loadPath, savePath):
+def genHoms(loadPath, savePath, toFile):
 
     saveData = {b'x':[],b'y':[],b'id':[]}
     c = 0
-    for i in range(4):
-        data = unpickle(loadPath+'/matBatch'+str(i))
+    for i in range(toFile+1):
+        data = unpickle(loadPath+str(i))
         xs = data[b'x']
         ys = data[b'y']
         # ids = data[b'id']
         print(len(xs))
         for j,m in enumerate(xs):
             print(str(i)+'-'+str(j))
-            if(m.shape[0]<=150):
-                barcodes = genHom(m)
-                saveData[b'x'].append(barcodes)
-                saveData[b'y'].append(ys[j])
-                # saveData[b'id'].append(ids[j])
-                c +=1
-        pickle(saveData,savePath+'/barcodes'+str(i))
+            barcodes,info = genHom(m,False)
+            saveData[b'x'].append(barcodes)
+            saveData[b'y'].append(ys[j])
+            # saveData[b'id'].append(ids[j])
+            c +=1
+        pickle(saveData,savePath+str(i))
         saveData = {b'x':[],b'y':[],b'id':[]}
 
 
 # ================================================
 # Generate Barcode Image from points(birth, persistence)
 # ================================================
+
+def getBcodeRange(loadPath,toFileNum):
+    maxX=0
+    minX=100000
+    maxY=0
+    minY=100000
+    xvals = []
+    yvals = []
+
+    for i in range(toFileNum+1):
+        print(i)
+        data = unpickle(loadPath+str(i))
+        X = data[b'x']
+        for barcodes in X:
+            for b in barcodes:
+                xvals.append(b[1][0])
+                if b[1][0]>maxX:
+                    maxX = b[1][0]
+                if b[1][0]<minX:
+                    minX = b[1][0]
+
+                if(b[1][1] != 'inf'):
+                    per = b[1][1] - b[1][0]
+                    if per>maxY:
+                        maxY = per
+                    if per<minY:
+                        minY = per
+                    yvals.append(per)
+    print("x"+str(minX)+" - "+str(maxX))
+    print("y"+str(minY)+" - "+str(maxY))
+    save = {}
+    save[b'x'] = xvals
+    save[b'y'] = yvals
+    pickle(save,'xyfreq207')
+# x2.8750314780885464 - 92.22719135916479
+# y0.0 - 2.6909231984761095
 def getBcodeImg(points,xr,yr,xn,yn):
     M = np.zeros([xn, yn])
     xl = (xr[1]-xr[0])/xn
@@ -441,7 +498,7 @@ def getBcodeImg(points,xr,yr,xn,yn):
 
     return np.rot90(M)
 
-def getBcodeImgs(loadPath, savePath):
+def getBcodeImgs(loadPath, savePath,rng):
     c = 0
     windowSize = 100
     # TODO: determine this range automatically
@@ -449,17 +506,18 @@ def getBcodeImgs(loadPath, savePath):
     yrng = (0,2.5+1)
     infpersistence = 3.5-.1
 
-    for i in range(4):
+    for i in range(rng):
         saveData = {b'x':[],b'y':[],b'id':[]}
-        data = unpickle(loadPath+'/barcodes'+str(i))
+        data = unpickle(loadPath+str(i))
         X = data[b'x']
         Y = data[b'y']
-        ids = data[b'id']
+
         for barcodes in X:
-            print(c)
+            print(barcodes)
             c+=1
             plotPoints = []
             for barcode in barcodes:
+                # print(barcode)
                 if( barcode[1][0]!=barcode[1][1]):
                     if(barcode[1][1] != 'inf'):
                         persistence = barcode[1][1] - barcode[1][0]
@@ -470,23 +528,63 @@ def getBcodeImgs(loadPath, savePath):
             M = getBcodeImg(plotPoints,xrng,yrng,windowSize,windowSize)
             saveData[b'x'].append(M)
         saveData[b'y'] = Y
-        saveData[b'id'] = ids
-        pickle(saveData,savePath+'/barcodeImage'+str(i))
+
+        pickle(saveData,savePath+str(i))
         saveData = {b'x':[],b'y':[],b'id':[]}
 
 
-# genHoms(loadPath='/Users/yhong/Desktop/SCOP_Simple/Ms',savePath='/Users/yhong/Desktop/SCOP_Simple/bcodes')
-# getBcodeImgs(loadPath='/media/sec/bcodes',savePath='/media/sec/bcodeImgs')
+def getBcodeImgsSeparated(loadPath, savePath, rng):
+    c = 0
+    windowSize = 100
+    # SCOPE 1.55
+    # xrng = (3.5,8.5)
+    # yrng = (0,2.5+1)
+    # SCOPE 2.70
+    xrng = (0, 20)
+    yrng = (0, 2.5 + 1)
+    infpersistence = 3.5 - .1
 
-# loadPath='/Users/yhong/Desktop/SCOP_Simple/Ms'
-# c = 0
-# for i in range(4):
-#     data = unpickle(loadPath+'/matBatch'+str(i))
-#     xs = data[b'x']
-#     ys = data[b'y']
-#     # ids = data[b'id']
-#     print(len(xs))
-#     for j,m in enumerate(xs):
-#         print(str(i)+'-'+str(j))
-#         if(m.shape[0]<=300):
-#             barcodes1 = genHom(m)
+    for i in [range(rng + 1)]:
+        data = unpickle(loadPath + str(i))
+        X = data[b'x']
+        Y = data[b'y']
+
+        for j, barcodes in enumerate(X):
+            print(str(i) + '-' + str(j))
+            c += 1
+            plotPoints = []
+            for barcode in barcodes:
+                # print(barcode)
+                if (barcode[1][0] != barcode[1][1]):
+                    if (barcode[1][1] != 'inf'):
+                        persistence = barcode[1][1] - barcode[1][0]
+                        plotPoints.append((barcode[1][0], persistence))
+                    else:
+                        k = 1
+                        plotPoints.append((barcode[1][0], infpersistence))
+            M = getBcodeImg(plotPoints, xrng, yrng, windowSize, windowSize)
+            saveData = {}
+            saveData[b'x'] = [M]
+            saveData[b'y'] = Y[j]
+
+            pickle(saveData, savePath + '/' + str(i) + '/' + str(j))
+
+def getBcodeImgOne(bcodes):
+    c = 0
+    windowSize = 50
+    # TODO: determine this range automatically
+    xrng = (3.5,8.5)
+    yrng = (0,2.5+1)
+    infpersistence = 3.5-.1
+    plotPoints = []
+
+    for barcode in bcodes:
+        # print(barcode)
+        if( barcode[1][0]!=barcode[1][1]):
+            if(barcode[1][1] != 'inf'):
+                persistence = barcode[1][1] - barcode[1][0]
+                plotPoints.append((barcode[1][0],persistence))
+            else:
+                plotPoints.append((barcode[1][0],infpersistence))
+    M = getBcodeImg(plotPoints,xrng,yrng,windowSize,windowSize)
+    return M
