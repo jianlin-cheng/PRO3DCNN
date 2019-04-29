@@ -77,6 +77,7 @@ TDA.getBcodeImgsSeparated(loadPath='barcodes/', savePath='barcodeImgs/',rng=N)
 
 ## Training and Evaluation
 Training and evaluation is done by running the following files.
+Parameters regarding which file to load is under section ###### Parameters #######
 
 trainDistM.py
 
