@@ -28,7 +28,7 @@ The following workflow is used to process the data.
 
 Protein Chain -> Dist M  -> Cropped Dist M
 
-                         -> Persistent Barcodes -> Persistence Images 
+Protein Chain -> Dist M  -> Persistent Barcodes -> Persistence Images 
                          
 ````
 import MAT
