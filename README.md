@@ -47,7 +47,7 @@ MAT.getDistMs(loadPath='chains/',savePath='mats/',sparse=False,rangeTo=N)
 # Cropped Dist M
 #########################
 #upToBatchNum is the number of files under 'mats/' that we should process
-MAT.splitMat(loadPath='mats/', savePath='croppedMats',windowSize=100,upToBatchNum=N)
+MAT.splitMat(loadPath='mats/', savePath='croppedMats/',windowSize=100,upToBatchNum=N)
 
 #########################
 # Persistence Homology
@@ -55,7 +55,7 @@ MAT.splitMat(loadPath='mats/', savePath='croppedMats',windowSize=100,upToBatchNu
 #toRange is the number of files under 'mats/' that we should process
 TDA.genHoms(loadPath='mats/', savePath='barcodes/', toRange=N)
 #rng is the number of files under 'mats/' that we should process
-TDA.getBcodeImgs(loadPath='barcodes/', savePath='barcodeImgs/',rng=N)
+TDA.getBcodeImgsSeparated(loadPath='barcodes/', savePath='barcodeImgs/',rng=N)
 
 
 ````
