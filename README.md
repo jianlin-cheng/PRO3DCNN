@@ -35,11 +35,14 @@ import MAT
 import TDA
 
 
-#This will save the protein chains in batches as chains/0 chains/1 chains/2 ...
+# This will save the protein chains in batches as chains/0 chains/1 chains/2 ...
+# Note 'chains/' directory must exist.
 MAT.getChains(loadPath='pdbstyle-1.55/', savePath='chains/',SCOPEdir='dir.cla.scop.1.55.txt')
 MAT.getChains(loadPath='pdbstyle-2.07/', savePath='chains/',SCOPEdir='dir.cla.scope.2.07-stable.txt')
 
-#rangeTo is the number that the files under 'chains/' that we should process
+
+# rangeTo is the number that the files under 'chains/' that we should process
+# Note 'mats/' directory must exist.
 MAT.getDistMs(loadPath='chains/',savePath='mats/',sparse=False,rangeTo=N)
 
 
@@ -47,14 +50,26 @@ MAT.getDistMs(loadPath='chains/',savePath='mats/',sparse=False,rangeTo=N)
 # Cropped Dist M
 #########################
 #upToBatchNum is the number of files under 'mats/' that we should process
+# Note 'croppedMats/' directory must exist along with the batch directories.
+# mkdir croppedMats
+# cd croppedMats
+# mkdir {1..999}
+
 MAT.splitMat(loadPath='mats/', savePath='croppedMats/',windowSize=100,upToBatchNum=N)
 
 #########################
 # Persistence Homology
 #########################
 #toRange is the number of files under 'mats/' that we should process
+# Note 'barcodes/' directory must exist
 TDA.genHoms(loadPath='mats/', savePath='barcodes/', toRange=N)
+
+
 #rng is the number of files under 'mats/' that we should process
+# Note 'barcodeImgs/' directory must exist along with the batch directories.
+# mkdir barcodeImgs
+# cd barcodeImgs
+# mkdir {1..999}
 TDA.getBcodeImgsSeparated(loadPath='barcodes/', savePath='barcodeImgs/',rng=N)
 
 
