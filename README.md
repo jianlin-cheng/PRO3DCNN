@@ -5,7 +5,7 @@
 ## Data
 
 The data can be downloaded from the berkely website. 
-Please download multiple pdb archives into the same directory and use  *tar -xf 'name of tar file'* to unzip the data.
+Please download multiple pdb archives into the same directory and use  **tar -xf 'name of tar file'** to unzip the data.
 The unzipped files are around 50GB.
 
 ### SCOP 1.55 (index file and pdb archive) 1.4GB
