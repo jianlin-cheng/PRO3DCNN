@@ -25,7 +25,9 @@ https://scop.berkeley.edu/downloads/pdbstyle/pdbstyle-2.07-7.tgz
 ## Processing Data
 
 The following workflow is used to process the data.
+
 Protein Chain -> Dist M  -> Cropped Dist M
+
                          -> Persistent Barcodes -> Persistence Images 
                          
 ````
