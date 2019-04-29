@@ -2,7 +2,7 @@ import ytl
 import ast
 import MAT 
 import TDA
-import Graphs
+import GRAPH
 import TDAOld
 
 
@@ -32,7 +32,7 @@ def graphHomAtChain(n,useNewMethod):
         chainData = MAT.unpickle('/Users/yhong/Desktop/SCOP_Simple/chains/chain_1.55_batch'+str(N))[b'chain']
 
     chain = chainData[n%6000]
-    Graphs.homPlot(chain,useNewMethod)
+    GRAPH.homPlot(chain, useNewMethod)
     distM = MAT.getDistM(chain)
 
     return info

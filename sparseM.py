@@ -25,7 +25,10 @@ class sparseM:
 
     def set(self,r,c,val):
         if(val == 0):
-            del self.cols[c][r]
+            try:
+                del self.cols[c][r]
+            except KeyError as error:
+                t='donothing'
         else:
             self.cols[c][r] = val
 
@@ -43,6 +46,11 @@ class sparseM:
         else:
             nonzeroRows = col.keys()
             return max(nonzeroRows)
+
+    def setWithNParray(self,nparray):
+        for i in range(nparray.shape[0]):
+            for j in range(nparray.shape[1]):
+                self.set(i,j,nparray[i][j])
 
     def nparray(self):
         M = np.zeros((self.r,self.c))

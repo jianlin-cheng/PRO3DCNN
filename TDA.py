@@ -423,11 +423,11 @@ def genHom(distM,useNewHomGen):
     return Barcodes,info
     # pickle(barcode,'barcode')
 
-def genHoms(loadPath, savePath, toFile):
+def genHoms(loadPath, savePath, toRange):
 
     saveData = {b'x':[],b'y':[],b'id':[]}
     c = 0
-    for i in range(toFile+1):
+    for i in range(toRange+1):
         data = unpickle(loadPath+str(i))
         xs = data[b'x']
         ys = data[b'y']
@@ -540,7 +540,7 @@ def getBcodeImgsSeparated(loadPath, savePath, rng):
     # xrng = (3.5,8.5)
     # yrng = (0,2.5+1)
     # SCOPE 2.70
-    xrng = (0, 20)
+    xrng = (0, 8.5)
     yrng = (0, 2.5 + 1)
     infpersistence = 3.5 - .1
 

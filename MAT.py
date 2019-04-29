@@ -65,9 +65,9 @@ def getChain(pdb_file):
         chain.append(coordinates[i , 0:3])
     return chain
 
-def getChains(loadPath, savePath):
+def getChains(loadPath, savePath,SCOPEdir):
     data = {b'x':[],b'y':[],b'id':[]}
-    directory = getProteinDirectory('dir.cla.scop.1.55.txt')
+    directory = getProteinDirectory(SCOPEdir)
 
     global errorList,chainN,saveSize,yLabels,lastLabel,lastLabelInt
 
@@ -108,15 +108,15 @@ def getChains(loadPath, savePath):
             errorList.append((entry,"noEntFileFound"))
 
         if chainN%saveSize==0:
-            pickle(data,savePath+'/chain'+batchNStr())
+            pickle(data,savePath+batchNStr())
             data = {b'x':[],b'y':[],b'id':[]}
 
 
     if chainN%saveSize!=0:
-        pickle(data,savePath+'/chain'+batchNStr())
+        pickle(data,savePath+batchNStr())
 
-    pickle(errorList,savePath+'/errorList')
-    pickle(yLabels,savePath+'/yLabels')
+    pickle(errorList,savePath+'errorList')
+    pickle(yLabels,savePath+'yLabels')
 
 def getDistM(chain):
     l = len(chain)
@@ -137,7 +137,7 @@ def sparseChain(chain,skip):
     nchain = [item for k, item in enumerate(chain) if k % skip != 0]
     return nchain
 
-def getDistMs(loadPath,savePath,sparse):
+def getDistMs(loadPath,savePath,sparse,rangeTo):
     global matN,saveSize
     saveData = {b'x':[],b'y':[],b'id':[]}
     matN = 0
@@ -147,9 +147,8 @@ def getDistMs(loadPath,savePath,sparse):
         global matN,saveSize
         return str(int((matN+1)/saveSize)-1)
 
-    ranges = [(0,5),(5,10),(10,15),(15,20),(20,24)]
-    for i in ranges[4]:#range(0,23+1):
-        database = unpickle(loadPath+"/chain"+str(i))
+    for i in range(0,rangeTo+1):
+        database = unpickle(loadPath+str(i))
         chains = database[b'x']
         y = database[b'y']
         ids = database[b'id']
@@ -165,21 +164,21 @@ def getDistMs(loadPath,savePath,sparse):
             saveData[b'id'].append(ids[j])
             
             if (matN+1)%saveSize==0:
-                pickle(saveData,savePath+'/matBatch'+batchNStr())
+                pickle(saveData,savePath+batchNStr())
                 saveData = {b'x':[],b'y':[],b'id':[]}
 
     if (matN+1)%saveSize!=0:
-        pickle(saveData,savePath+'/matBatch'+batchNStr())
+        pickle(saveData,savePath+batchNStr())
 
 
-def genChainAnalytics(loadPath,savePath):
+def inpectSCOPeDataDistribution(loadPath):
     global matN,saveSize
 
     classN = {}
     chainLen = []
 
     for i in range(0,23+1):
-        database = unpickle(loadPath+"/chain"+str(i))
+        database = unpickle(loadPath+str(i))
         chains = database[b'x']
         y = database[b'y']
         ids = database[b'id']
@@ -190,6 +189,41 @@ def genChainAnalytics(loadPath,savePath):
                 classN[y[j]]+=1
             except KeyError as error:
                 classN[y[j]]=0
+
+def SQCrops(array,windowSize):
+    batches = []
+    testSample = []
+    dim = array.shape[0]
+    m = 0
+    n = 0
+    shift = 50
+    while m+windowSize <= dim:
+        while n+windowSize <= dim:
+            batches.append(array[m:m+windowSize,n:n+windowSize])
+            n+=1*shift
+        m+=1*shift
+    return batches
+
+def splitMat(loadPath,savePath,windowSize,upToBatchNum):
+
+    for i in range(upToBatchNum+1):
+        data = unpickle(loadPath+str(i))
+        x = data[b'x']
+        y = data[b'y']
+        os.mkdir(savePath+str(i))
+        for j,matrix in enumerate(x):
+            cwd = savePath+str(i)+'/'+str(j)
+            os.mkdir(cwd)
+            if matrix.shape[0]>windowSize:
+                croppedData = SQCrops(matrix,windowSize)
+                for k,m in enumerate(croppedData):
+                    filename = cwd+'/'+str(k)
+                    pickle((m,y[j]),filename)
+            else:
+                padLength = windowSize-matrix.shape[0]
+                m = np.pad(matrix,(0,padLength),'constant')
+                filename = cwd+'/'+str(0)
+                pickle((m,y[j]),filename)
 
 
 # ====================================================================================
