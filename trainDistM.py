@@ -74,11 +74,11 @@ model.compile(loss=keras.losses.categorical_crossentropy,
 ##########################################
 
 ###### Parameters #######
-dataNumber = 232822
+dataNumber = 18913
 epoch = 20
-batchNum = 50
+batchNum = 20
 global loadPath
-loadPath = '/media/sec/splitRealMat207/'
+loadPath = 'croppedMats/'
 ###### Parameters #######
 
 ordering = np.arange(dataNumber)
@@ -129,7 +129,6 @@ for e in range(epoch):
         sumAcc += results[1]
         sumLoss += results[0]
     print("\nValAcc: "+str(round(sumAcc/nvalBatch,5)) + " Loss: " + str(round(sumLoss/nvalBatch,5)))
-
 
 #Testing
 sumAcc = 0
