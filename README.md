@@ -82,3 +82,13 @@ Parameters regarding which file to load is under section ###### Parameters #####
 trainDistM.py
 
 trainBcodeImg.py
+
+trainBoth.py
+
+If using a GPU, use the following instead:
+
+trainDistMgpu.py
+
+trainBcodeImggpu.py
+
+trainBothgpu.py
