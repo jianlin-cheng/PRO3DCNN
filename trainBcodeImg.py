@@ -41,6 +41,11 @@ def unpickle(file):
         dict = pickle.load(fo, encoding='bytes')
     return dict
 
+def pickle(data,filename):
+    import pickle
+    f = open(filename,"wb")
+    pickle.dump(data,f,protocol=2)
+    f.close()
 
 
 windowSize=100
@@ -73,11 +78,11 @@ model.compile(loss=keras.losses.categorical_crossentropy,
 ##########################################
 ###### Parameters #######
 windowSize=100
-dataNumber = 232822
+dataNumber = 18913
 epoch = 20
-batchNum = 50
+batchNum = 19
 global loadPath
-loadPath = '/media/sec/barcodesImg207/'
+loadPath = 'barcodeImgs/'
 ###### Parameters #######
 
 nsplit = math.ceil(dataNumber/batchNum)
@@ -93,7 +98,6 @@ valI = ordering[trainN:trainN+valN]
 nvalBatch = math.ceil(valN/batchNum)
 testI = ordering[trainN+valN:]
 ntestBatch = math.ceil(testN/batchNum)
-
 
 ordering = np.arange(dataNumber)
 for e in range(epoch):
@@ -131,7 +135,6 @@ for e in range(epoch):
         sumAcc += results[1]
         sumLoss += results[0]
     print("\nValAcc: "+str(round(sumAcc/nvalBatch,5)) + " Loss: " + str(round(sumLoss/nvalBatch,5)))
-
 
 #Testing
 sumAcc = 0
