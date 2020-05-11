@@ -90,7 +90,7 @@ dataNumber = 18913
 epoch = 20
 batchNum = 50
 global loadPath
-loadPath = 'barcodeImgs_h/'
+loadPath = 'barcodeImgs/'
 ###### Parameters #######
 
 nsplit = math.ceil(dataNumber/batchNum)
@@ -109,11 +109,6 @@ ntestBatch = math.ceil(testN/batchNum)
 
 
 ordering = np.arange(dataNumber)
-stat = {}
-stat['trainAcc'] = []
-stat['trainLoss'] = []
-stat['valAcc'] = []
-stat['valLoss'] = []
 
 for e in range(epoch):
     #model.save('homCNN207.h5')
@@ -135,8 +130,6 @@ for e in range(epoch):
         sumAcc += results[1]
         sumLoss += results[0]
     print("\nAcc: "+str(round(sumAcc/ntrainBatch,5)) + " Loss: " + str(round(sumLoss/ntrainBatch,5)))
-    stat['trainAcc'].append(sumAcc/ntrainBatch)
-    stat['trainLoss'].append(sumLoss/ntrainBatch)
 
     #Validation
     sumAcc = 0
@@ -153,8 +146,6 @@ for e in range(epoch):
         sumAcc += results[1]
         sumLoss += results[0]
     print("\nValAcc: "+str(round(sumAcc/nvalBatch,5)) + " Loss: " + str(round(sumLoss/nvalBatch,5)))
-    stat['valAcc'].append(sumAcc/nvalBatch)
-    stat['valLoss'].append(sumLoss/nvalBatch)
 
 
 #Testing
@@ -172,11 +163,6 @@ for j,indices in enumerate(testBatches):
     sumAcc += results[1]
     sumLoss += results[0]
 print("\nTestAcc: "+str(round(sumAcc/nvalBatch,5)) + " Loss: " + str(round(sumLoss/nvalBatch,5)))
-stat['testAcc'] = sumAcc/nvalBatch
-stat['testLoss'] = sumLoss/nvalBatch
-
-#pick(stat, 'homstat207')
-pick(stat, 'homstat_h1')
 
 ##########################################
 ###### Validation #######
